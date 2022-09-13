@@ -5,7 +5,7 @@ import { userRouter } from './routes/user.route';
 import { photoRouter } from './routes/photo.route';
 import { errorHandler } from './middleware/error.middleware';
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const app: Express = express();
 
