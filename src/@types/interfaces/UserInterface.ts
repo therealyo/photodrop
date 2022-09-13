@@ -1,6 +1,7 @@
 export interface UserInterface {
     readonly login: string;
     readonly password: string;
+    readonly userId?: number;
     readonly email?: string;
     readonly fullName?: string;
     save(): Promise<string>;

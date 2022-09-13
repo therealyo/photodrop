@@ -9,7 +9,7 @@ export class UserController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(
+                next(
                     ApiError.BadRequest(
                         'Request does not pass validation',
                         errors.array()

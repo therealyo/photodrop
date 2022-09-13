@@ -1,7 +1,6 @@
 import { compare, hash } from 'bcrypt';
 import { ApiError } from '../errors/api.error';
 import { User } from '../models/User';
-import jwt from 'jsonwebtoken';
 import { TokenService } from './token.service';
 
 export class UserService {
@@ -22,13 +21,13 @@ export class UserService {
     }
     static async login(login: string, password: string) {
         if (!(await User.exists(login))) {
-            throw ApiError.BadRequest(`Wrong login or password`);
+            throw ApiError.WrongCredentials();
         }
         const userData = (await User.getUserData(login))[0];
         const isPassValid = await compare(password, userData.password);
 
         if (!isPassValid) {
-            throw ApiError.BadRequest(`Wrong login or password`);
+            throw ApiError.WrongCredentials();
         }
 
         const token = TokenService.generateToken(userData);

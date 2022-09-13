@@ -1,7 +1,7 @@
 export interface AlbumInterface {
     readonly albumName: string;
-    readonly ownerId: number;
+    readonly userId: number;
     readonly location: string;
     readonly date: string;
-    readonly key: string;
+    readonly key?: string;
 }

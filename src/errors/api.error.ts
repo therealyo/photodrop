@@ -13,6 +13,9 @@ export class ApiError extends Error {
         this.status = status;
         this.errors = errors;
     }
+    static WrongCredentials() {
+        return new ApiError(401, 'Wrong login or password');
+    }
 
     static UnauthorizedError() {
         return new ApiError(401, 'Not Authorized');
