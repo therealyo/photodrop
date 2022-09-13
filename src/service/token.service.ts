@@ -14,10 +14,7 @@ export class TokenService {
             const userData = jwt.verify(token, process.env.SECRET!) as User;
             return userData;
         } catch (err) {
-            if (err.message === 'jwt expired') {
-                throw ApiError.UnauthorizedError();
-            }
-            throw new ApiError(500, err.message, err);
+            throw ApiError.UnauthorizedError();
         }
     }
     static async getBearerToken(authHeader: string): Promise<string> {
