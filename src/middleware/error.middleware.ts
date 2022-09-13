@@ -15,7 +15,5 @@ export function errorHandler(
             errors: err.errors
         });
     }
-    return res
-        .status(500)
-        .json({ status: 500, message: err.message, errors: err.errors });
+    return res.status(500).json({ status: 500, message: err.message });
 }
