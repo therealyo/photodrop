@@ -13,11 +13,9 @@ export class UserService {
     ) {
         const hashedPassword = await hash(password, 3);
         const user = new User(login, hashedPassword, email, fullName);
-        // console.log(user);
-        // console.log(await User.exists(user));
+
         if (!(await User.exists(login))) {
             return await user.save();
-            // throw ApiError.BadRequest(`User ${login} already exists`);
         } else {
             throw ApiError.BadRequest(`User ${login} already exists`);
         }
