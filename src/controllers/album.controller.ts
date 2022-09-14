@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
-import { User } from '../models/User';
+// import { User } from '../models/User';
 // import { Album } from '../models/Album';
-import AlbumService from '../service/album.service';
+import albumService from '../service/album.service';
 
 export class AlbumController {
     static async createAlbum(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +18,7 @@ export class AlbumController {
                 );
             }
             const { name: albumName, location, date, user } = req.body;
-            const album = await AlbumService.createAlbum(
+            const album = await albumService.createAlbum(
                 user,
                 albumName,
                 location,
@@ -49,7 +49,7 @@ export class AlbumController {
             }
             const { albumName } = req.params;
             const { userName } = req.body;
-            await AlbumService.deleteAlbum(albumName, userName);
+            await albumService.deleteAlbum(albumName, userName);
             return res.status(200).json({
                 status: 200,
                 message: `Deleted ${albumName}`

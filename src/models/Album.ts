@@ -1,6 +1,7 @@
 import { connect } from '../connectors/sql.connector';
 import { AlbumInterface } from '../@types/interfaces/AlbumInterface';
 import { User } from './User';
+import { BucketParams } from '../@types/BucketParams';
 
 export class Album implements AlbumInterface {
     albumName: string;
@@ -24,6 +25,18 @@ export class Album implements AlbumInterface {
             [[this.albumName, this.userId, this.location, this.date, this.key]]
         );
         return `Added ${this.albumName}`;
+    }
+
+    static async getAlbumData(
+        albumName: string,
+        userId: number
+    ): Promise<Album[]> {
+        const conn = await connect();
+        const query = await conn.query(
+            `SELECT * FROM users WHERE albumName=? and userId=?`,
+            [[albumName], [userId]]
+        );
+        return JSON.parse(JSON.stringify(query))[0];
     }
 
     static async delete(albumName: string, userId: number): Promise<string> {

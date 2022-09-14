@@ -1,6 +1,6 @@
 export interface PhotoInterface {
-    readonly name: string;
+    readonly name?: string;
     readonly albumId: number;
-    readonly link: string;
-    numbers: string[];
+    readonly link?: string;
+    numbers?: string[];
 }

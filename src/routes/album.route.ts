@@ -6,8 +6,8 @@ export const albumRouter = Router();
 
 // api/albums routes
 albumRouter.get('/', auth, AlbumController.getAlbums);
-albumRouter.post('/', auth, AlbumController.createAlbum);
-albumRouter.delete('/:albumName', AlbumController.deleteAlbum);
+albumRouter.post('/', auth, AlbumController.createAlbum); //done
+albumRouter.delete('/:albumName', AlbumController.deleteAlbum); //done
 albumRouter.get('/:albumName', auth, AlbumController.getAlbum);
 
 // export default albumRouter;

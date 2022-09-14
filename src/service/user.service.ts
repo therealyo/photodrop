@@ -3,8 +3,8 @@ import { ApiError } from '../errors/api.error';
 import { User } from '../models/User';
 import { TokenService } from './token.service';
 
-export class UserService {
-    static async registration(
+class UserService {
+    async registration(
         login: string,
         password: string,
         email?: string,
@@ -19,7 +19,7 @@ export class UserService {
             throw ApiError.BadRequest(`User ${login} already exists`);
         }
     }
-    static async login(login: string, password: string) {
+    async login(login: string, password: string) {
         if (!(await User.exists(login))) {
             throw ApiError.WrongCredentials();
         }
@@ -33,5 +33,7 @@ export class UserService {
         const token = TokenService.generateToken(userData);
         return token;
     }
-    static async getAlbums() {}
+    async getAlbums() {}
 }
+
+export default new UserService();

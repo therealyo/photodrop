@@ -2,7 +2,7 @@ import { hash } from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
-import { UserService } from '../service/user.service';
+import userService from '../service/user.service';
 
 export class UserController {
     static async registration(req: Request, res: Response, next: NextFunction) {
@@ -17,7 +17,7 @@ export class UserController {
                 );
             }
             const { login, password, email, fullName } = req.body;
-            const userData = await UserService.registration(
+            const userData = await userService.registration(
                 login,
                 password,
                 email,
@@ -46,7 +46,7 @@ export class UserController {
                 );
             }
             const { login, password } = req.body;
-            const userData = await UserService.login(login, password);
+            const userData = await userService.login(login, password);
 
             return res.status(200).json({
                 status: 200,
