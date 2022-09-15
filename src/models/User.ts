@@ -1,6 +1,6 @@
 import { UserInterface } from '../@types/interfaces/UserInterface';
 import { hash } from 'bcrypt';
-import { connect } from '../connectors/sql.connector';
+import connection from '../connectors/sql.connector';
 
 export class User implements UserInterface {
     login: string;
@@ -26,8 +26,7 @@ export class User implements UserInterface {
     }
 
     async save(): Promise<string> {
-        const conn = await connect();
-        await conn.query(
+        await connection.query(
             'INSERT INTO users (login, password, email, fullName) VALUES (?) ;',
             [[this.login, this.password, this.email, this.fullName]]
         );
@@ -38,10 +37,10 @@ export class User implements UserInterface {
     static async getUserData(login: string): Promise<User[]>;
     static async getUserData(arg: string | number): Promise<User[]> {
         const param = typeof arg === 'string' ? 'login' : 'userId';
-        const conn = await connect();
-        const query = await conn.query(`SELECT * FROM users WHERE ${param}=?`, [
-            arg
-        ]);
+        const query = await connection.query(
+            `SELECT userId, login, password FROM users WHERE ${param}=?`,
+            [arg]
+        );
         return JSON.parse(JSON.stringify(query))[0];
     }
 

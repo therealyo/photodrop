@@ -1,7 +1,7 @@
 export interface BucketParams {
     Bucket: string;
     Key: string;
-    expiresIn?: number;
+    Expires?: number;
     ACL?: string;
     Body?: string;
 }

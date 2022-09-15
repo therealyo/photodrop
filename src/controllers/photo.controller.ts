@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
+import { Album } from '../models/Album';
 import photoService from '../service/photo.service';
 
 export class PhotoController {
@@ -17,10 +18,12 @@ export class PhotoController {
             }
             const { albumName } = req.params;
             const { amount, numbers, user } = req.body;
+            const albumId = await Album.getAlbumId(albumName, user.userId);
             const links = await photoService.savePhotos(
+                `${albumName}/${user.login}`,
                 amount,
                 numbers,
-                albumName
+                albumId
             );
 
             return res.status(200).json({

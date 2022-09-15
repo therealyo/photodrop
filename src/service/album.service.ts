@@ -6,7 +6,7 @@ import bucket from '../connectors/s3.connector';
 
 dotenv.config();
 class AlbumService {
-    private getParams(key: string): BucketParams {
+    private getParams(key: string) {
         return {
             Bucket: process.env.BUCKET_NAME!,
             Key: key

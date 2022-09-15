@@ -2,22 +2,18 @@ import { PhotoInterface } from '../@types/interfaces/PhotoInterface';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
-import { connect } from '../connectors/sql.connector';
+import connection from '../connectors/sql.connector';
+// import { Pool } from 'mysql2/promise';
 
 const randomBytes = promisify(crypto.randomBytes);
 export class Photo implements PhotoInterface {
     name?: string;
     albumId: number;
-    link?: string;
     numbers?: string[];
 
     constructor(albumId: number, numbers?: string[]) {
         this.albumId = albumId;
         this.numbers = numbers ? numbers : [];
-    }
-
-    async setLink(link: string): Promise<void> {
-        this.link = link;
     }
 
     async generateName(): Promise<void> {
@@ -27,18 +23,44 @@ export class Photo implements PhotoInterface {
     }
 
     async save(): Promise<void> {
-        const conn = await connect();
-        await conn.query(
-            'INSERT INTO photos (photoId, albumId, link) VALUES (?)',
-            [[this.name, this.albumId, this.link]]
+        await connection.query(
+            'INSERT INTO photos (photoId, albumId) VALUES (?)',
+            [[this.name, this.albumId]]
         );
         await this.saveNumbers();
+        await this.savePhotoToNumbersRelations();
+        // await conn.end();
     }
 
-    async saveNumbers(): Promise<void> {
+    private async savePhotoToNumbersRelations(): Promise<void> {
+        const photoToNumbersRelation = await this.getPhotoNumberRelations();
+        await connection.query(
+            'INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?',
+            [photoToNumbersRelation]
+        );
+    }
+
+    private async saveNumbers(): Promise<void> {
         for (const number of this.numbers!) {
-            await new PhoneNumber(number).save();
+            const phoneNumber = new PhoneNumber(number);
+            if (!(await phoneNumber.exists())) {
+                await phoneNumber.save();
+            }
         }
+    }
+
+    private async getPhotoNumberRelations(): Promise<(string | number)[][]> {
+        const ids = [] as (number | undefined)[];
+        for (const number of this.numbers!) {
+            const phoneNumber = new PhoneNumber(number);
+            if (await phoneNumber.exists()) {
+                ids.push(await phoneNumber.getId());
+            }
+        }
+
+        return ids.map((id) => {
+            return [this.name!, id!];
+        });
     }
 
     async getPhotoData() {}
