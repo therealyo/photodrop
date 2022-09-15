@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { auth } from '../middleware/auth.middleware';
-import { PhotoController } from '../controllers/photo.controller';
+import photoController from '../controllers/photo.controller';
 
 export const photoRouter = Router();
 
-photoRouter.post('/:albumName', auth, PhotoController.savePhotos);
+photoRouter.post('/:albumName', auth, photoController.savePhotos);
 
 // export default photoRouter;

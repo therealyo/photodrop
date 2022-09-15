@@ -24,9 +24,6 @@ class PhotoService {
         const root = `${user.login}/${albumName}`;
         const links = [] as string[];
         const photos = [] as Photo[];
-        const phoneNumbers = numbers.map((num) => {
-            return new PhoneNumber(num, user.userId!);
-        });
         const albumId = await Album.getAlbumId(albumName, user.userId!);
 
         for (let i = 0; i < amount; i++) {
@@ -37,8 +34,13 @@ class PhotoService {
             links.push(await getPresignedUrl('putObject', params));
         }
 
+        const phoneNumbers = numbers.map((num) => {
+            return new PhoneNumber(num, user.userId!);
+        });
         await PhoneNumber.save(phoneNumbers);
+
         await Photo.save(photos);
+
         return links;
     }
 }

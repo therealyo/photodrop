@@ -22,15 +22,6 @@ export class Album implements AlbumInterface {
 
     async save(): Promise<string> {
         try {
-            console.log([
-                [
-                    this.albumName,
-                    this.userId,
-                    this.location,
-                    this.date,
-                    this.path
-                ]
-            ]);
             await connection.query(
                 'INSERT INTO albums (albumName, userId, location, date, path) VALUES (?);',
                 [

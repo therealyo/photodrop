@@ -4,8 +4,8 @@ import { ApiError } from '../errors/api.error';
 import { Album } from '../models/Album';
 import photoService from '../service/photo.service';
 
-export class PhotoController {
-    static async savePhotos(req: Request, res: Response, next: NextFunction) {
+class PhotoController {
+    async savePhotos(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -18,7 +18,7 @@ export class PhotoController {
             }
             const { albumName } = req.params;
             const { amount, numbers, user } = req.body;
-            // const albumId = await Album.getAlbumId(albumName, user.userId);
+
             const links = await photoService.savePhotos(
                 user,
                 albumName,
@@ -35,3 +35,5 @@ export class PhotoController {
         }
     }
 }
+
+export default new PhotoController();

@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { Router } from 'express';
+import { auth } from '../middleware/auth.middleware';
 
-export const clientRouter = Router()
+export const clientRouter = Router();
 
-clientRouter.get("/searchClient");
+clientRouter.get('/searchClient', auth);
 
 // export default clientRouter;

@@ -24,6 +24,22 @@ export class Photo implements PhotoInterface {
     }
 
     static async save(photos: Photo[]): Promise<void> {
+        await Photo.savePhotos(photos);
+        await Promise.all(
+            photos.map((photo) => {
+                photo.savePhotoNumbersRelation();
+            })
+        );
+        // const insertValues = photos.map((photo) => {
+        //     return [photo.name, photo.albumId];
+        // });
+        // await connection.query(
+        //     'INSERT INTO photos (photoId, albumId) VALUES ?',
+        //     [insertValues]
+        // );
+    }
+
+    static async savePhotos(photos: Photo[]) {
         const insertValues = photos.map((photo) => {
             return [photo.name, photo.albumId];
         });
@@ -32,8 +48,6 @@ export class Photo implements PhotoInterface {
             [insertValues]
         );
     }
-
-    static async savePhotos() {}
 
     private async getPhotoNumbersRelations(): Promise<(string | number)[][]> {
         const ids = [] as (number | undefined)[];
@@ -47,7 +61,7 @@ export class Photo implements PhotoInterface {
         });
     }
 
-    async savePhotoNumbersRelation() {
+    private async savePhotoNumbersRelation() {
         const photoToNumbersRelation = await this.getPhotoNumbersRelations();
         await connection.query(
             'INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?',

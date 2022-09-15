@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { AlbumController } from '../controllers/album.controller';
+import albumController from '../controllers/album.controller';
 import { auth } from '../middleware/auth.middleware';
 
 export const albumRouter = Router();
 
 // api/albums routes
-albumRouter.get('/', auth, AlbumController.getAlbums);
-albumRouter.post('/', auth, AlbumController.createAlbum); //done
-albumRouter.delete('/:albumName', AlbumController.deleteAlbum); //done
-albumRouter.get('/:albumName', auth, AlbumController.getAlbum);
+albumRouter.get('/', auth, albumController.getAlbums); //done
+albumRouter.post('/', auth, albumController.createAlbum); //done
+albumRouter.delete('/:albumName', albumController.deleteAlbum); //done
+albumRouter.get('/:albumName', auth, albumController.getAlbum); //done
 
 // export default albumRouter;

@@ -3,8 +3,8 @@ import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
 import albumService from '../service/album.service';
 
-export class AlbumController {
-    static async createAlbum(req: Request, res: Response, next: NextFunction) {
+class AlbumController {
+    async createAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -34,7 +34,7 @@ export class AlbumController {
         }
     }
 
-    static async deleteAlbum(req: Request, res: Response, next: NextFunction) {
+    async deleteAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -57,7 +57,7 @@ export class AlbumController {
         }
     }
 
-    static async getAlbums(req: Request, res: Response, next: NextFunction) {
+    async getAlbums(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -80,7 +80,7 @@ export class AlbumController {
         }
     }
 
-    static async getAlbum(req: Request, res: Response, next: NextFunction) {
+    async getAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -107,3 +107,5 @@ export class AlbumController {
         }
     }
 }
+
+export default new AlbumController();

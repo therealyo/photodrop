@@ -4,8 +4,8 @@ import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
 import userService from '../service/user.service';
 
-export class UserController {
-    static async registration(req: Request, res: Response, next: NextFunction) {
+class UserController {
+    async registration(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -34,7 +34,8 @@ export class UserController {
             next(err);
         }
     }
-    static async login(req: Request, res: Response, next: NextFunction) {
+
+    async login(req: Request, res: Response, next: NextFunction) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -57,3 +58,5 @@ export class UserController {
         }
     }
 }
+
+export default new UserController();

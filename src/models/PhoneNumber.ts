@@ -63,7 +63,7 @@ export class PhoneNumber implements NumberInterface {
             })
         );
         await connection.query(
-            'INSERT INTO usersPhones (userId, numberId) VALUES ?',
+            'INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?',
             [userNumberRelation]
         );
     }
