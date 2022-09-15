@@ -22,6 +22,15 @@ export class Album implements AlbumInterface {
 
     async save(): Promise<string> {
         try {
+            console.log([
+                [
+                    this.albumName,
+                    this.userId,
+                    this.location,
+                    this.date,
+                    this.path
+                ]
+            ]);
             await connection.query(
                 'INSERT INTO albums (albumName, userId, location, date, path) VALUES (?);',
                 [
@@ -35,7 +44,7 @@ export class Album implements AlbumInterface {
                 ]
             );
         } catch (err) {
-            throw ApiError.BadRequest('User Not Found');
+            throw new ApiError(400, `Album ${this.albumName} already exists`);
         }
 
         return `Added ${this.albumName}`;

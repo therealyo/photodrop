@@ -20,6 +20,7 @@ class AlbumService {
         date: string
     ): Promise<Album> {
         const album = new Album(albumName, user, location, date);
+        console.log(album);
         const params = this.getParams(`${user.login}/${albumName}/`);
         await bucket.putObject(params).promise();
         return album;

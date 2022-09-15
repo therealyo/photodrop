@@ -18,12 +18,12 @@ export class PhotoController {
             }
             const { albumName } = req.params;
             const { amount, numbers, user } = req.body;
-            const albumId = await Album.getAlbumId(albumName, user.userId);
+            // const albumId = await Album.getAlbumId(albumName, user.userId);
             const links = await photoService.savePhotos(
-                `${albumName}/${user.login}`,
+                user,
+                albumName,
                 amount,
-                numbers,
-                albumId
+                numbers
             );
 
             return res.status(200).json({

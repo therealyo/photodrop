@@ -1,7 +1,9 @@
 import { BucketParams } from '../@types/BucketParams';
 import { Photo } from '../models/Photo';
-import bucket from '../connectors/s3.connector';
 import { getPresignedUrl } from './presignedUrl.service';
+import { PhoneNumber } from '../models/PhoneNumber';
+import { User } from '../models/User';
+import { Album } from '../models/Album';
 
 class PhotoService {
     private getParams(key: string): BucketParams {
@@ -14,19 +16,29 @@ class PhotoService {
     }
 
     async savePhotos(
-        root: string,
+        user: User,
+        albumName: string,
         amount: number,
-        numbers: string[],
-        albumId: number
+        numbers: string[]
     ): Promise<string[]> {
+        const root = `${user.login}/${albumName}`;
         const links = [] as string[];
+        const photos = [] as Photo[];
+        const phoneNumbers = numbers.map((num) => {
+            return new PhoneNumber(num, user.userId!);
+        });
+        const albumId = await Album.getAlbumId(albumName, user.userId!);
+
         for (let i = 0; i < amount; i++) {
             const photo = new Photo(albumId, numbers);
             await photo.generateName();
-            await photo.save();
+            photos.push(photo);
             const params = this.getParams(`${root}/${photo.name}`);
             links.push(await getPresignedUrl('putObject', params));
         }
+
+        await PhoneNumber.save(phoneNumbers);
+        await Photo.save(photos);
         return links;
     }
 }
