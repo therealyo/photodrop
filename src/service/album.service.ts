@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import { Album } from '../models/Album';
 import { User } from '../models/User';
-import { BucketParams } from '../@types/BucketParams';
 import bucket from '../connectors/s3.connector';
+import { Photo } from '../models/Photo';
 
 dotenv.config();
 class AlbumService {
@@ -32,9 +32,23 @@ class AlbumService {
         await Album.delete(albumName, userId!);
     }
 
-    async getAlbums() {}
+    async getAlbums(userId: number): Promise<Album[]> {
+        return await Album.getUserAlbums(userId);
+    }
 
-    async getAlbum() {}
+    async getAlbum(userId: number, albumName: string) {
+        const albumData = await Album.getAlbumData(albumName, userId);
+        const photos = await Photo.getAlbumPhotos(albumData.albumId!);
+        albumData.photos = photos.map((photo: { photoId: string }) => {
+            return `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}`;
+        });
+        return {
+            name: albumData.albumName,
+            location: albumData.location,
+            date: albumData.date,
+            photos: albumData.photos
+        };
+    }
 }
 
 export default new AlbumService();

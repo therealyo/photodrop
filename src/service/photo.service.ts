@@ -8,7 +8,8 @@ class PhotoService {
         return {
             Bucket: process.env.BUCKET_NAME!,
             Key: key,
-            Expires: 60
+            Expires: 60,
+            ACL: 'public-read'
         };
     }
 

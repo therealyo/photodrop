@@ -14,7 +14,6 @@ export class PhoneNumber implements NumberInterface {
             await connection.query('INSERT INTO numbers (num) VALUES (?)', [
                 [this.number]
             ]);
-            // await conn.end();
         } catch (err) {}
 
         return this;

@@ -29,7 +29,6 @@ export class Photo implements PhotoInterface {
         );
         await this.saveNumbers();
         await this.savePhotoToNumbersRelations();
-        // await conn.end();
     }
 
     private async savePhotoToNumbersRelations(): Promise<void> {
@@ -43,8 +42,10 @@ export class Photo implements PhotoInterface {
     private async saveNumbers(): Promise<void> {
         for (const number of this.numbers!) {
             const phoneNumber = new PhoneNumber(number);
-            if (!(await phoneNumber.exists())) {
+            try {
                 await phoneNumber.save();
+            } catch (err) {
+                continue;
             }
         }
     }
@@ -53,9 +54,7 @@ export class Photo implements PhotoInterface {
         const ids = [] as (number | undefined)[];
         for (const number of this.numbers!) {
             const phoneNumber = new PhoneNumber(number);
-            if (await phoneNumber.exists()) {
-                ids.push(await phoneNumber.getId());
-            }
+            ids.push(await phoneNumber.getId());
         }
 
         return ids.map((id) => {
@@ -63,5 +62,11 @@ export class Photo implements PhotoInterface {
         });
     }
 
-    async getPhotoData() {}
+    static async getAlbumPhotos(albumId: number) {
+        const query = (await connection.query(
+            'SELECT photoId FROM photos WHERE albumId=?',
+            [[albumId]]
+        )) as any[];
+        return query[0];
+    }
 }

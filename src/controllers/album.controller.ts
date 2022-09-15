@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/api.error';
-// import { User } from '../models/User';
-// import { Album } from '../models/Album';
 import albumService from '../service/album.service';
 
 export class AlbumController {
@@ -70,6 +68,13 @@ export class AlbumController {
                     )
                 );
             }
+
+            const { user } = req.body;
+            const albums = await albumService.getAlbums(user.userId);
+            return res.status(200).json({
+                status: 200,
+                body: albums
+            });
         } catch (err) {
             next(err);
         }
@@ -86,6 +91,17 @@ export class AlbumController {
                     )
                 );
             }
+            const { albumName } = req.params;
+            const { user } = req.body;
+            const albumData = await albumService.getAlbum(
+                user.userId,
+                albumName
+            );
+
+            return res.status(200).json({
+                status: 200,
+                body: albumData
+            });
         } catch (err) {
             next(err);
         }

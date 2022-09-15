@@ -5,4 +5,5 @@ export interface AlbumInterface {
     readonly location: string;
     readonly date: string;
     readonly key?: string;
+    photos?: string[];
 }
