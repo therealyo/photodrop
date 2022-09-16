@@ -30,7 +30,7 @@ class PhotoService {
             const photo = new Photo(albumId, numbers);
             await photo.generateName();
             photos.push(photo);
-            const params = this.getParams(`${root}/${photo.name}`);
+            const params = this.getParams(`${root}/${photo.name}.jpg`);
             links.push(await getPresignedUrl('putObject', params));
         }
 
