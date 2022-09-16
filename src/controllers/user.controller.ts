@@ -34,6 +34,14 @@ class UserController {
             next(err);
         }
     }
+
+    async searchClient(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { contains } = req.params;
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 export default new UserController();
