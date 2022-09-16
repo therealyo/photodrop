@@ -41,7 +41,7 @@ class AlbumService {
         const albumData = await Album.getAlbumData(albumName, userId);
         const photos = await Photo.getAlbumPhotos(albumData.albumId!);
         albumData.photos = photos.map((photo: { photoId: string }) => {
-            return `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}`;
+            return `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.jpg`;
         });
         return {
             name: albumData.albumName,
