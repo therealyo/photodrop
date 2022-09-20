@@ -17,7 +17,7 @@ export class Album implements AlbumInterface {
         this.userId = user.userId!;
         this.location = location;
         this.date = date;
-        this.path = `${user.login}/${albumName}/`;
+        this.path = `albums/${user.login}/${albumName}/`;
     }
 
     async save(): Promise<string> {

@@ -38,6 +38,13 @@ class UserController {
     async searchClient(req: Request, res: Response, next: NextFunction) {
         try {
             const { contains } = req.params;
+            const { user } = req.body;
+            const clientNumber = userService.searchClient(contains, user);
+
+            return res.status(200).json({
+                status: 200,
+                data: clientNumber
+            });
         } catch (err) {
             next(err);
         }

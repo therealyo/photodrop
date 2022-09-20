@@ -1,7 +1,8 @@
 import { compare, hash } from 'bcrypt';
 import { ApiError } from '../errors/api.error';
 import { User } from '../models/User';
-import { TokenService } from './token.service';
+import tokenService from './token.service';
+import connection from '../connectors/sql.connector';
 
 class UserService {
     async registration(
@@ -19,6 +20,7 @@ class UserService {
             throw ApiError.BadRequest(`User ${login} already exists`);
         }
     }
+
     async login(login: string, password: string) {
         if (!(await User.exists(login))) {
             throw ApiError.WrongCredentials();
@@ -30,10 +32,13 @@ class UserService {
             throw ApiError.WrongCredentials();
         }
 
-        const token = TokenService.generateToken(userData);
+        const token = tokenService.generateToken(userData);
         return token;
     }
-    async getAlbums() {}
+
+    async searchClient(phoneNumber: string, user: User) {
+        const query = connection.query('SELECT');
+    }
 }
 
 export default new UserService();

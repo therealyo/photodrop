@@ -20,14 +20,14 @@ class AlbumService {
         date: string
     ): Promise<Album> {
         const album = new Album(albumName, user, location, date);
-        const params = this.getParams(`${user.login}/${albumName}/`);
+        const params = this.getParams(`albums/${user.login}/${albumName}/`);
         await bucket.putObject(params).promise();
         return album;
     }
 
     async deleteAlbum(albumName: string, userName: string): Promise<void> {
         const { userId } = (await User.getUserData(userName))[0];
-        const params = this.getParams(`${userName}/${albumName}/`);
+        const params = this.getParams(`albums/${userName}/${albumName}/`);
         await bucket.deleteObject(params).promise();
         await Album.delete(albumName, userId!);
     }
