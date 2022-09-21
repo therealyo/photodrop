@@ -28,14 +28,13 @@ class OtpService {
         const client = await Client.getData(number);
 
         if (client) {
-            if (
-                client.token === code &&
-                this.compareDates(new Date(), client.expires)
-            ) {
+            if (client.token === code && this.compareDates(new Date(), client.expires)) {
                 return await tokenService.generateToken(client);
             } else {
                 throw ApiError.VerificationError();
             }
+        } else {
+            throw new ApiError(401, 'Wrong phone number');
         }
     }
 

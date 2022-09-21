@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import clientService from '../service/client.service';
+import phoneService from '../service/phoneNumber.service';
 
 class ClientController {
     async sendOtp(req: Request, res: Response, next: NextFunction) {
         try {
             const { number, newNumber } = req.body;
-            const result = await clientService.createClient(number, newNumber);
+            const result = await clientService.createClient(
+                phoneService.concatNumber(number)!,
+                phoneService.concatNumber(newNumber)
+            );
 
             return res.status(200).json({
                 status: 200,
@@ -20,9 +24,9 @@ class ClientController {
         try {
             const { number, code, newNumber } = req.body;
             const token = await clientService.verifyClient(
-                number,
+                phoneService.concatNumber(number)!,
                 code,
-                newNumber
+                phoneService.concatNumber(newNumber)
             );
 
             return res.status(200).json({

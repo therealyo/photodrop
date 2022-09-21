@@ -1,33 +1,49 @@
+import { ApiError } from './../errors/api.error';
 import { Client } from '../models/Client';
 import otpService from './otp.service';
+import tokenService from './token.service';
+import phoneService from './phoneNumber.service';
 
 class ClientService {
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.sendOtp(number);
         const client = new Client(number, otp);
 
-        if (newNumber) {
-            await client.updateNumber(newNumber);
+        if (await Client.getData(number)) {
+            await client.updateOtp();
+            if (newNumber) await client.setNewNumber(newNumber);
         } else {
-            if (!(await Client.getData(number))) {
-                await client.save();
-            } else {
-                await client.updateOtp();
-            }
+            if (newNumber) throw ApiError.BadRequest('User does not exist');
+            else await client.save();
         }
 
         return 'Verification code sent';
     }
 
-    async verifyClient(number: string, code: string, newNumber?: string) {
-        const accessToken = await otpService.verifyOtp(number, code);
-        return accessToken;
+    async verifyClient(number: string, code: string, newNumber?: string): Promise<string | undefined> {
+        const verified = await otpService.verifyOtp(number, code);
+        if (verified) {
+            const client = await Client.getData(number);
+            if (newNumber) {
+                if (await Client.getData(newNumber)) {
+                    throw ApiError.BadRequest('Cannot change number. User with such number already exists');
+                }
+                if (await Client.verifyChangeNumber(client!, newNumber)) {
+                    await Client.changeNumber(client!, newNumber);
+                    return 'Number changed';
+                } else {
+                    throw ApiError.BadRequest('New number not verified');
+                }
+            } else {
+                return await tokenService.generateToken(client!);
+            }
+        }
     }
 
     async getClient(client: Client) {
         const userData = await Client.getData(client.number);
         return {
-            number: userData!.number,
+            number: phoneService.splitNumber(userData!.number),
             email: userData!.email,
             name: userData!.name,
             selfie: userData!.selfieLink
