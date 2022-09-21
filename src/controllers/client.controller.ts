@@ -52,7 +52,19 @@ class ClientController {
         }
     }
 
-    async setSelfie() {}
+    async setSelfie(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { user } = req.body;
+            const link = await clientService.setSelfie(user);
+
+            return res.status(200).json({
+                status: 200,
+                link
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 export default new ClientController();

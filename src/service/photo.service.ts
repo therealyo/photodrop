@@ -6,21 +6,16 @@ import { User } from '../models/User';
 import { Album } from '../models/Album';
 
 class PhotoService {
-    private getParams(key: string): BucketParams {
+    getParams(key: string): BucketParams {
         return {
             Bucket: process.env.BUCKET_NAME!,
             Key: key,
-            Expires: 60,
+            Expires: 3600,
             ACL: 'public-read'
         };
     }
 
-    async savePhotos(
-        user: User,
-        albumName: string,
-        amount: number,
-        numbers: string[]
-    ): Promise<string[]> {
+    async savePhotos(user: User, albumName: string, amount: number, numbers: string[]): Promise<string[]> {
         const root = `${user.login}/${albumName}`;
         const links = [] as string[];
         const photos = [] as Photo[];
@@ -28,7 +23,7 @@ class PhotoService {
 
         for (let i = 0; i < amount; i++) {
             const photo = new Photo(albumId, numbers);
-            await photo.generateName();
+            await photo.setName();
             photos.push(photo);
             const params = this.getParams(`${root}/${photo.name}.jpg`);
             links.push(await getPresignedUrl('putObject', params));

@@ -3,6 +3,9 @@ import { Client } from '../models/Client';
 import otpService from './otp.service';
 import tokenService from './token.service';
 import phoneService from './phoneNumber.service';
+import { getPresignedUrl } from './presignedUrl.service';
+import { Photo } from '../models/Photo';
+import photoService from './photo.service';
 
 class ClientService {
     async createClient(number: string, newNumber?: string): Promise<string> {
@@ -14,7 +17,10 @@ class ClientService {
             if (newNumber) await client.setNewNumber(newNumber);
         } else {
             if (newNumber) throw ApiError.BadRequest('User does not exist');
-            else await client.save();
+            else {
+                await client.setFolder();
+                await client.save();
+            }
         }
 
         return 'Verification code sent';
@@ -46,11 +52,17 @@ class ClientService {
             number: phoneService.splitNumber(userData!.number),
             email: userData!.email,
             name: userData!.name,
-            selfie: userData!.selfieLink
+            selfie: `${process.env.BUCKET_PATH}${userData!.selfieFolder}/${userData!.selfieLink}.jpg`
         };
     }
 
-    async setSelfie() {}
+    async setSelfie(client: Client) {
+        const selfieName = await Photo.generateName();
+        const params = photoService.getParams(`selfies/${client.selfieFolder}/${selfieName}.jpg`);
+        const link = await getPresignedUrl('putObject', params);
+        await Client.setSelfie(client, selfieName);
+        return link;
+    }
 }
 
 export default new ClientService();

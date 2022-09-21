@@ -1,11 +1,13 @@
 import connection from '../connectors/sql.connector';
 import { ClientInterface } from '../@types/interfaces/ClientInterface';
 import { Otp } from '../@types/Otp';
+import { Photo } from './Photo';
 
 export class Client implements ClientInterface {
     clientId?: number;
     number: string;
     selfieLink?: string;
+    selfieFolder?: string;
     name?: string;
     email?: string;
     token: string;
@@ -17,10 +19,13 @@ export class Client implements ClientInterface {
         this.expires = otp.expires;
     }
 
+    async setFolder() {
+        this.selfieFolder = await Photo.generateName();
+    }
     async save() {
         await connection.query(
-            'INSERT IGNORE INTO clients (number, name, email, selfieLink, token, expires) VALUES (?)',
-            [[this.number, this.name, this.email, this.selfieLink, this.token, this.expires]]
+            'INSERT IGNORE INTO clients (number, name, email, selfieLink, selfieFolder, token, expires) VALUES (?)',
+            [[this.number, this.name, this.email, this.selfieLink, this.selfieFolder, this.token, this.expires]]
         );
     }
 
@@ -41,7 +46,6 @@ export class Client implements ClientInterface {
             [client.number]
         ])) as any[];
         const newNumber = query[0][0].newNumber;
-        // console.log(newNumber[0]);
         return number === newNumber;
     }
 
@@ -55,5 +59,9 @@ export class Client implements ClientInterface {
     static async getData(number: string | undefined): Promise<Client | undefined> {
         const res = (await connection.query('SELECT * FROM clients WHERE number=?', [[number]])) as any[];
         return res[0][0];
+    }
+
+    static async setSelfie(client: Client, link: string) {
+        await connection.query('UPDATE clients SET selfieLink=? WHERE number=?', [[link], [client.number]]);
     }
 }
