@@ -30,7 +30,7 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 
 export const searchClientValidation = (req: Request, res: Response, next: NextFunction) => {
     const schema = Joi.object({
-        contains: Joi.string().pattern(new RegExp('^\\d{10,15}$')).required()
+        contains: Joi.string().pattern(new RegExp('^\\ ?\\d{10,15}$')).required()
     });
     try {
         validate(req, next, schema, 'query');
