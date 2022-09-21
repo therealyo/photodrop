@@ -13,12 +13,7 @@ class AlbumService {
         };
     }
 
-    async createAlbum(
-        user: User,
-        albumName: string,
-        location: string,
-        date: string
-    ): Promise<Album> {
+    async createAlbum(user: User, albumName: string, location: string, date: string): Promise<Album> {
         const album = new Album(albumName, user, location, date);
         const params = this.getParams(`albums/${user.login}/${albumName}/`);
         await bucket.putObject(params).promise();
@@ -39,7 +34,7 @@ class AlbumService {
     async getAlbum(userId: number, albumName: string) {
         const albumData = await Album.getAlbumData(albumName, userId);
         const photos = await Photo.getAlbumPhotos(albumData.albumId!);
-        albumData.photos = photos.map((photo: { photoId: string }) => {
+        albumData.photos = photos.map((photo) => {
             return `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.jpg`;
         });
         return {

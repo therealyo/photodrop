@@ -19,17 +19,17 @@ export class Client implements ClientInterface {
         this.expires = otp.expires;
     }
 
-    async setFolder() {
+    async setFolder(): Promise<void> {
         this.selfieFolder = await Photo.generateName();
     }
-    async save() {
+    async save(): Promise<void> {
         await connection.query(
             'INSERT IGNORE INTO clients (number, name, email, selfieLink, selfieFolder, token, expires) VALUES (?)',
             [[this.number, this.name, this.email, this.selfieLink, this.selfieFolder, this.token, this.expires]]
         );
     }
 
-    async updateOtp() {
+    async updateOtp(): Promise<void> {
         await connection.query('UPDATE clients SET token=?, expires=? WHERE number=?', [
             [this.token],
             [this.expires],
@@ -37,11 +37,11 @@ export class Client implements ClientInterface {
         ]);
     }
 
-    async setNewNumber(number: string) {
+    async setNewNumber(number: string): Promise<void> {
         await connection.query('UPDATE clients SET newNumber=? WHERE number=?', [[number], [this.number]]);
     }
 
-    static async verifyChangeNumber(client: Client, number: string) {
+    static async verifyChangeNumber(client: Client, number: string): Promise<boolean> {
         const query = (await connection.query('SELECT newNumber FROM clients WHERE number=?', [
             [client.number]
         ])) as any[];
@@ -49,7 +49,7 @@ export class Client implements ClientInterface {
         return number === newNumber;
     }
 
-    static async changeNumber(client: Client, number: string) {
+    static async changeNumber(client: Client, number: string): Promise<void> {
         await connection.query('UPDATE clients SET number=?, newNumber="undefined" WHERE number=?', [
             [number],
             client.number
@@ -61,7 +61,7 @@ export class Client implements ClientInterface {
         return res[0][0];
     }
 
-    static async setSelfie(client: Client, link: string) {
+    static async setSelfie(client: Client, link: string): Promise<void> {
         await connection.query('UPDATE clients SET selfieLink=? WHERE number=?', [[link], [client.number]]);
     }
 }

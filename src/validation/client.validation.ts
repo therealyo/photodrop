@@ -14,7 +14,7 @@ export const sendOtpValidation = (req: Request, res: Response, next: NextFunctio
         })
     });
     try {
-        validate(req, next, schema);
+        validate(req, next, schema, 'body');
     } catch (err) {
         next(err);
     }
@@ -33,7 +33,7 @@ export const verifyOtpValidation = (req: Request, res: Response, next: NextFunct
         code: Joi.string().length(6).required()
     });
     try {
-        validate(req, next, schema);
+        validate(req, next, schema, 'body');
     } catch (err) {
         next(err);
     }

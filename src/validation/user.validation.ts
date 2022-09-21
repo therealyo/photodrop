@@ -10,7 +10,7 @@ export const signupValidation = (req: Request, res: Response, next: NextFunction
         fullName: Joi.string()
     });
     try {
-        validate(req, next, schema);
+        validate(req, next, schema, 'body');
     } catch (err) {
         next(err);
     }
@@ -22,7 +22,18 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
         password: Joi.string().required()
     });
     try {
-        validate(req, next, schema);
+        validate(req, next, schema, 'body');
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const searchClientValidation = (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+        contains: Joi.string().pattern(new RegExp('^\\d{10,15}$')).required()
+    });
+    try {
+        validate(req, next, schema, 'query');
     } catch (err) {
         next(err);
     }

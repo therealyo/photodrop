@@ -10,7 +10,7 @@ export const presignedUrlValidation = (req: Request, res: Response, next: NextFu
         amount: Joi.number().required()
     });
     try {
-        validate(req, next, schema);
+        validate(req, next, schema, 'body');
     } catch (err) {
         next(err);
     }
