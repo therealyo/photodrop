@@ -6,6 +6,7 @@ import phoneService from './phoneNumber.service';
 import { getPresignedUrl } from './presignedUrl.service';
 import { Photo } from '../models/Photo';
 import photoService from './photo.service';
+import { ClientData } from '../@types/ClientData';
 
 class ClientService {
     async createClient(number: string, newNumber?: string): Promise<string> {
@@ -46,7 +47,7 @@ class ClientService {
         }
     }
 
-    async getClient(client: Client) {
+    async getClient(client: Client): Promise<ClientData> {
         const userData = await Client.getData(client.number);
         return {
             number: phoneService.splitNumber(userData!.number),
@@ -56,7 +57,7 @@ class ClientService {
         };
     }
 
-    async setSelfie(client: Client) {
+    async setSelfie(client: Client): Promise<string> {
         const selfieName = await Photo.generateName();
         const params = photoService.getParams(`selfies/${client.selfieFolder}/${selfieName}.jpg`);
         const link = await getPresignedUrl('putObject', params);

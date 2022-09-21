@@ -1,3 +1,4 @@
+import { ApiError } from './../errors/api.error';
 import { NextFunction, Request, Response } from 'express';
 import userService from '../service/user.service';
 
@@ -5,12 +6,7 @@ class UserController {
     async registration(req: Request, res: Response, next: NextFunction) {
         try {
             const { login, password, email, fullName } = req.body;
-            const userData = await userService.registration(
-                login,
-                password,
-                email,
-                fullName
-            );
+            const userData = await userService.registration(login, password, email, fullName);
 
             return res.status(200).json({
                 status: 200,
@@ -24,11 +20,12 @@ class UserController {
     async login(req: Request, res: Response, next: NextFunction) {
         try {
             const { login, password } = req.body;
-            const userData = await userService.login(login, password);
+            const token = await userService.login(login, password);
 
             return res.status(200).json({
                 status: 200,
-                data: userData
+                message: 'Successfully logged in',
+                token: token
             });
         } catch (err) {
             next(err);
@@ -37,13 +34,21 @@ class UserController {
 
     async searchClient(req: Request, res: Response, next: NextFunction) {
         try {
-            const { contains } = req.params;
+            const { contains } = req.query;
             const { user } = req.body;
-            const clientNumber = userService.searchClient(contains, user);
+
+            if (!contains) {
+                throw new ApiError(400, 'Provide contains argument');
+            }
+            if (typeof contains !== 'string') {
+                throw new ApiError(500, 'Invalid contains argument');
+            }
+
+            const clientNumber = await userService.searchClient(user, contains);
 
             return res.status(200).json({
                 status: 200,
-                data: clientNumber
+                data: clientNumber ? clientNumber : 'not found'
             });
         } catch (err) {
             next(err);

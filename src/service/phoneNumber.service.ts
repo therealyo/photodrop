@@ -1,7 +1,8 @@
 import { parsePhoneNumber } from 'libphonenumber-js';
+import { ParsedNumber } from '../@types/ParsedNumber';
 
 class PhoneService {
-    splitNumber(phoneNumber: string) {
+    splitNumber(phoneNumber: string): ParsedNumber | undefined {
         const parsedNumber = parsePhoneNumber(phoneNumber);
         return {
             countryCode: `+${parsedNumber.countryCallingCode}`,
@@ -9,7 +10,7 @@ class PhoneService {
         };
     }
 
-    concatNumber(number: { countryCode: string; number: string }) {
+    concatNumber(number: { countryCode: string; number: string }): string | undefined {
         try {
             return number.countryCode + number.number;
         } catch (err) {}

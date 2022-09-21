@@ -1,5 +1,3 @@
-import { ValidationError } from 'express-validator';
-
 export class ApiError extends Error {
     status;
     errors;
@@ -9,19 +7,19 @@ export class ApiError extends Error {
         this.status = status;
         this.errors = errors;
     }
-    static WrongCredentials() {
+    static WrongCredentials(): ApiError {
         return new ApiError(401, 'Wrong login or password');
     }
 
-    static UnauthorizedError() {
+    static UnauthorizedError(): ApiError {
         return new ApiError(401, 'Not Authorized');
     }
 
-    static BadRequest(message: string, errors: string[] = []) {
+    static BadRequest(message: string, errors: string[] = []): ApiError {
         return new ApiError(400, message, errors);
     }
 
-    static VerificationError() {
+    static VerificationError(): ApiError {
         return new ApiError(401, 'Wrong token');
     }
 }

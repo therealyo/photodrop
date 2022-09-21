@@ -11,27 +11,9 @@ export class PhoneNumber implements NumberInterface {
         this.userId = userId;
     }
 
-    // async save(): Promise<PhoneNumber> {
-    //     try {
-    //         await connection.query('INSERT INTO numbers (num) VALUES (?)', [
-    //             [this.number]
-    //         ]);
-    //     } catch (err) {}
-
-    //     return this;
-    // }
-
-    // async exists(): Promise<boolean> {
-    //     const entries = await this.getId();
-    //     return !(entries === undefined);
-    // }
-
     static async getId(num: string): Promise<number | undefined> {
         try {
-            const query = (await connection.query(
-                'SELECT numberId FROM numbers WHERE num=?',
-                [[num]]
-            )) as any;
+            const query = (await connection.query('SELECT numberId FROM numbers WHERE number=?', [[num]])) as any;
             return query[0][0].numberId;
         } catch (err) {
             return undefined;
@@ -43,29 +25,20 @@ export class PhoneNumber implements NumberInterface {
         await PhoneNumber.saveUsersRelation(phoneNumbers);
     }
 
-    private static async saveNumbers(
-        phoneNumbers: PhoneNumber[]
-    ): Promise<void> {
+    private static async saveNumbers(phoneNumbers: PhoneNumber[]): Promise<void> {
         const numbers = phoneNumbers.map((num) => {
             return [num.number];
         });
-        await connection.query('INSERT IGNORE INTO numbers (num) VALUES ?', [
-            numbers
-        ]);
+        await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?', [numbers]);
     }
 
-    private static async saveUsersRelation(
-        phoneNumbers: PhoneNumber[]
-    ): Promise<void> {
+    private static async saveUsersRelation(phoneNumbers: PhoneNumber[]): Promise<void> {
         const userNumberRelation = await Promise.all(
             phoneNumbers.map(async (num) => {
                 return [num.userId, await PhoneNumber.getId(num.number)];
             })
         );
-        await connection.query(
-            'INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?',
-            [userNumberRelation]
-        );
+        await connection.query('INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?', [userNumberRelation]);
     }
 
     private static async savePhotosRelation(photos: Photo[]): Promise<void> {}

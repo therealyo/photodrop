@@ -1,5 +1,5 @@
+import { PhoneNumber } from './PhoneNumber';
 import { UserInterface } from '../@types/interfaces/UserInterface';
-import { hash } from 'bcrypt';
 import connection from '../connectors/sql.connector';
 
 export class User implements UserInterface {
@@ -9,13 +9,7 @@ export class User implements UserInterface {
     email?: string;
     fullName?: string;
 
-    constructor(
-        login: string,
-        password: string,
-        email?: string,
-        fullName?: string,
-        id?: number
-    ) {
+    constructor(login: string, password: string, email?: string, fullName?: string, id?: number) {
         this.login = login;
         this.password = password;
         this.email = email ? email : 'undefined';
@@ -26,10 +20,9 @@ export class User implements UserInterface {
     }
 
     async save(): Promise<string> {
-        await connection.query(
-            'INSERT INTO users (login, password, email, fullName) VALUES (?) ;',
-            [[this.login, this.password, this.email, this.fullName]]
-        );
+        await connection.query('INSERT INTO users (login, password, email, fullName) VALUES (?) ;', [
+            [this.login, this.password, this.email, this.fullName]
+        ]);
         return `User ${this.login} saved`;
     }
 
@@ -37,15 +30,22 @@ export class User implements UserInterface {
     static async getUserData(login: string): Promise<User[]>;
     static async getUserData(arg: string | number): Promise<User[]> {
         const param = typeof arg === 'string' ? 'login' : 'userId';
-        const query = await connection.query(
-            `SELECT userId, login, password FROM users WHERE ${param}=?`,
-            [arg]
-        );
+        const query = await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg]);
         return JSON.parse(JSON.stringify(query))[0];
     }
 
     static async exists(login: string): Promise<boolean> {
         const entries = await User.getUserData(login);
         return entries.length !== 0 ? true : false;
+    }
+
+    static async searchClient(user: User, contains: string): Promise<PhoneNumber | undefined> {
+        const validNumber = `+${contains.replace(' ', '+')}`.replace('++', '+');
+        const query = (await connection.query(
+            'SELECT *  FROM numbers INNER JOIN usersPhones ON numbers.numberId=usersPhones.numberId WHERE userId=? AND number=?;',
+            [[user.userId], [validNumber]]
+        )) as any[];
+
+        return query[0][0];
     }
 }

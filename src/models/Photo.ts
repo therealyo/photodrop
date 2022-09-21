@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
+import { PhotoId } from '../@types/PhotoId';
 
 const randomBytes = promisify(crypto.randomBytes);
 export class Photo implements PhotoInterface {
@@ -16,7 +17,7 @@ export class Photo implements PhotoInterface {
         this.numbers = numbers ? numbers : [];
     }
 
-    async setName() {
+    async setName(): Promise<void> {
         const name = await Photo.generateName();
         this.name = name;
     }
@@ -36,7 +37,7 @@ export class Photo implements PhotoInterface {
         );
     }
 
-    static async savePhotos(photos: Photo[]) {
+    static async savePhotos(photos: Photo[]): Promise<void> {
         const insertValues = photos.map((photo) => {
             return [photo.name, photo.albumId];
         });
@@ -54,12 +55,12 @@ export class Photo implements PhotoInterface {
         });
     }
 
-    private async savePhotoNumbersRelation() {
+    private async savePhotoNumbersRelation(): Promise<void> {
         const photoToNumbersRelation = await this.getPhotoNumbersRelations();
         await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?', [photoToNumbersRelation]);
     }
 
-    static async getAlbumPhotos(albumId: number) {
+    static async getAlbumPhotos(albumId: number): Promise<PhotoId[]> {
         const query = (await connection.query('SELECT photoId FROM photos WHERE albumId=?', [[albumId]])) as any[];
         return query[0];
     }
