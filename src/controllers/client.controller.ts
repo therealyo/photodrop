@@ -65,6 +65,20 @@ class ClientController {
             next(err);
         }
     }
+
+    async setPersonalData(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, email, user } = req.body;
+            const message = await clientService.setPersonalData(user, name, email);
+
+            return res.status(200).json({
+                status: 200,
+                message
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 export default new ClientController();

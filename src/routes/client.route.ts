@@ -1,4 +1,4 @@
-import { sendOtpValidation, verifyOtpValidation } from './../validation/client.validation';
+import { sendOtpValidation, verifyOtpValidation, personalDataValidation } from './../validation/client.validation';
 import { Router } from 'express';
 import clientController from '../controllers/client.controller';
 import { auth } from '../middleware/auth.middleware';
@@ -10,3 +10,5 @@ clientRouter.post('/verifyOtp', verifyOtpValidation, clientController.verifyOtp)
 
 clientRouter.get('/client', auth, clientController.getClient);
 clientRouter.get('/getPresignedUrl', auth, clientController.setSelfie);
+
+clientRouter.put('/client', personalDataValidation, auth, clientController.setPersonalData);

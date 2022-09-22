@@ -64,6 +64,11 @@ class ClientService {
         await Client.setSelfie(client, selfieName);
         return link;
     }
+
+    async setPersonalData(client: Client, name: string | undefined, email: string | undefined): Promise<string> {
+        await Client.setPersonalData(client, name, email);
+        return 'profile changed';
+    }
 }
 
 export default new ClientService();

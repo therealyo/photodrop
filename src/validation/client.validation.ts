@@ -38,3 +38,15 @@ export const verifyOtpValidation = (req: Request, res: Response, next: NextFunct
         next(err);
     }
 };
+
+export const personalDataValidation = (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+        name: Joi.string(),
+        email: Joi.string().email()
+    });
+    try {
+        validate(req, next, schema, 'body');
+    } catch (err) {
+        next(err);
+    }
+};

@@ -14,8 +14,8 @@ app.use(bodyParser.text());
 app.use(express.json());
 app.use('/', userRouter);
 app.use('/', clientRouter);
+app.use('/', photoRouter);
 app.use('/albums', albumRouter);
-app.use('/getPresignedUrl', photoRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

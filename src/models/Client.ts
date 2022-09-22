@@ -64,4 +64,8 @@ export class Client implements ClientInterface {
     static async setSelfie(client: Client, link: string): Promise<void> {
         await connection.query('UPDATE clients SET selfieLink=? WHERE number=?', [[link], [client.number]]);
     }
+
+    static async setPersonalData(client: Client, name: string | undefined, email: string | undefined) {
+        await connection.query('UPDATE clients SET name=?, email=? WHERE number=?', [[name], [email], [client.number]]);
+    }
 }
