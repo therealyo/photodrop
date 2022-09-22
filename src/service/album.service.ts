@@ -1,10 +1,11 @@
+import { ApiError } from './../errors/api.error';
 import dotenv from 'dotenv';
 import { Album } from '../models/Album';
 import { User } from '../models/User';
 import bucket from '../connectors/s3.connector';
-import { Photo } from '../models/Photo';
 
 dotenv.config();
+
 class AlbumService {
     private getParams(key: string) {
         return {
@@ -27,22 +28,25 @@ class AlbumService {
         await Album.delete(albumName, userId!);
     }
 
-    async getAlbums(userId: number): Promise<Album[]> {
-        return await Album.getUserAlbums(userId);
-    }
-
     async getAlbum(userId: number, albumName: string) {
         const albumData = await Album.getAlbumData(albumName, userId);
-        const photos = await Photo.getAlbumPhotos(albumData.albumId!);
-        albumData.photos = photos.map((photo) => {
-            return `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.jpg`;
-        });
-        return {
-            name: albumData.albumName,
-            location: albumData.location,
-            date: albumData.date,
-            photos: albumData.photos
-        };
+        if (albumData) {
+            const albumPhotos = await Album.getAlbumPhotos(albumData.albumId!);
+            const photos = albumPhotos.map((photo) => {
+                return {
+                    url: `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.jpg`,
+                    watermark: photo.waterMark!
+                };
+            });
+            return {
+                name: albumData.albumName,
+                location: albumData.location,
+                date: albumData.date,
+                photos: photos
+            };
+        } else {
+            throw ApiError.NotFound('album not found');
+        }
     }
 }
 

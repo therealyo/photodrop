@@ -22,4 +22,8 @@ export class ApiError extends Error {
     static VerificationError(): ApiError {
         return new ApiError(401, 'Wrong token');
     }
+
+    static NotFound(message: string): ApiError {
+        return new ApiError(404, message);
+    }
 }

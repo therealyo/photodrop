@@ -1,6 +1,7 @@
 import { PhoneNumber } from './PhoneNumber';
 import { UserInterface } from '../@types/interfaces/UserInterface';
 import connection from '../connectors/sql.connector';
+import { Album } from './Album';
 
 export class User implements UserInterface {
     login: string;
@@ -47,5 +48,26 @@ export class User implements UserInterface {
         )) as any[];
 
         return query[0][0];
+    }
+
+    static async getUserAlbums(user: User): Promise<Album[]> {
+        const query = (await connection.query('SELECT * FROM albums WHERE userId=?', [[user.userId!]])) as any[];
+        return query[0];
+    }
+
+    static async countUserPhotos(user: User): Promise<number> {
+        const userAlbums = await User.getUserAlbums(user);
+        const photoAmounts = await Promise.all(
+            userAlbums.map(async (album) => {
+                const amount = await Album.countPhotos(album);
+                return amount;
+            })
+        );
+        return photoAmounts.reduce((prev, next) => prev + next, 0);
+    }
+
+    static async photosUntilWaterMark(user: User): Promise<number> {
+        const photoAmount = await User.countUserPhotos(user);
+        return photoAmount - 3;
     }
 }

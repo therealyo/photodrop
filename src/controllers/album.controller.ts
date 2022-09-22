@@ -5,12 +5,7 @@ class AlbumController {
     async createAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const { name: albumName, location, date, user } = req.body;
-            const album = await albumService.createAlbum(
-                user,
-                albumName,
-                location,
-                date
-            );
+            const album = await albumService.createAlbum(user, albumName, location, date);
             const message = await album.save();
             return res.status(200).json({
                 status: 200,
@@ -35,27 +30,11 @@ class AlbumController {
         }
     }
 
-    async getAlbums(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { user } = req.body;
-            const albums = await albumService.getAlbums(user.userId);
-            return res.status(200).json({
-                status: 200,
-                data: albums
-            });
-        } catch (err) {
-            next(err);
-        }
-    }
-
     async getAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const { albumName } = req.params;
             const { user } = req.body;
-            const albumData = await albumService.getAlbum(
-                user.userId,
-                albumName
-            );
+            const albumData = await albumService.getAlbum(user.userId, albumName);
 
             return res.status(200).json({
                 status: 200,

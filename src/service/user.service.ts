@@ -5,6 +5,7 @@ import tokenService from './token.service';
 import { Client } from '../models/Client';
 import phoneNumberService from './phoneNumber.service';
 import { ClientData } from '../@types/ClientData';
+import { Album } from '../models/Album';
 
 class UserService {
     async registration(login: string, password: string, email?: string, fullName?: string): Promise<string> {
@@ -31,6 +32,10 @@ class UserService {
 
         const token = tokenService.generateToken(userData);
         return token;
+    }
+
+    async getAlbums(user: User): Promise<Album[]> {
+        return await User.getUserAlbums(user);
     }
 
     async searchClient(user: User, contains: string): Promise<ClientData | undefined> {

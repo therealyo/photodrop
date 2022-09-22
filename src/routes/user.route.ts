@@ -7,6 +7,7 @@ export const userRouter = Router();
 
 userRouter.post('/signup', signupValidation, userController.registration);
 userRouter.post('/login', loginValidation, userController.login);
+userRouter.get('/albums', auth, userController.getAlbums);
 userRouter.get('/searchClient', searchClientValidation, auth, userController.searchClient);
 
 // export default userRouter;

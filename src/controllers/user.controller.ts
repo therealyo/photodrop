@@ -32,6 +32,19 @@ class UserController {
         }
     }
 
+    async getAlbums(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { user } = req.body;
+            const albums = await userService.getAlbums(user);
+            return res.status(200).json({
+                status: 200,
+                data: albums
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     async searchClient(req: Request, res: Response, next: NextFunction) {
         try {
             const { contains } = req.query;

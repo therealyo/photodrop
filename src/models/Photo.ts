@@ -11,10 +11,12 @@ export class Photo implements PhotoInterface {
     albumId?: number;
     userId?: number;
     numbers?: string[];
+    waterMark: boolean;
 
-    constructor(albumId: number, numbers?: string[]) {
+    constructor(albumId: number, waterMarkStatus: boolean, numbers?: string[]) {
         this.albumId = albumId;
         this.numbers = numbers ? numbers : [];
+        this.waterMark = waterMarkStatus;
     }
 
     async setName(): Promise<void> {
@@ -39,9 +41,9 @@ export class Photo implements PhotoInterface {
 
     static async savePhotos(photos: Photo[]): Promise<void> {
         const insertValues = photos.map((photo) => {
-            return [photo.name, photo.albumId];
+            return [photo.name, photo.albumId, photo.waterMark];
         });
-        await connection.query('INSERT INTO photos (photoId, albumId) VALUES ?', [insertValues]);
+        await connection.query('INSERT INTO photos (photoId, albumId, waterMark) VALUES ?', [insertValues]);
     }
 
     private async getPhotoNumbersRelations(): Promise<(string | number)[][]> {
@@ -58,10 +60,5 @@ export class Photo implements PhotoInterface {
     private async savePhotoNumbersRelation(): Promise<void> {
         const photoToNumbersRelation = await this.getPhotoNumbersRelations();
         await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?', [photoToNumbersRelation]);
-    }
-
-    static async getAlbumPhotos(albumId: number): Promise<PhotoId[]> {
-        const query = (await connection.query('SELECT photoId FROM photos WHERE albumId=?', [[albumId]])) as any[];
-        return query[0];
     }
 }

@@ -20,9 +20,16 @@ class PhotoService {
         const links = [] as string[];
         const photos = [] as Photo[];
         const albumId = await Album.getAlbumId(albumName, user.userId!);
+        let photosUntilWaterMark = await User.photosUntilWaterMark(user);
 
         for (let i = 0; i < amount; i++) {
-            const photo = new Photo(albumId, numbers);
+            let needWaterMark = false;
+            if (photosUntilWaterMark < 0) {
+                photosUntilWaterMark += 1;
+            } else {
+                needWaterMark = true;
+            }
+            const photo = new Photo(albumId, needWaterMark, numbers);
             await photo.setName();
             photos.push(photo);
             const params = this.getParams(`${root}/${photo.name}.jpg`);
@@ -32,10 +39,9 @@ class PhotoService {
         const phoneNumbers = numbers.map((num) => {
             return new PhoneNumber(num, user.userId!);
         });
+
         await PhoneNumber.save(phoneNumbers);
-
         await Photo.save(photos);
-
         return links;
     }
 }

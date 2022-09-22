@@ -18,9 +18,6 @@ app.use('/albums', albumRouter);
 app.use('/getPresignedUrl', photoRouter);
 app.use(errorHandler);
 
-// app.post("/signup", signupValidator, signup)
-
 app.listen(PORT, () => {
-    // if (err) => console.log(err);
     console.log(`listening on http://localhost:${PORT}/`);
 });
