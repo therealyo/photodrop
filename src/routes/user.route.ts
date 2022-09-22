@@ -6,7 +6,7 @@ import { signupValidation, loginValidation, searchClientValidation } from '../va
 export const userRouter = Router();
 
 userRouter.post('/signup', signupValidation, userController.registration);
-userRouter.post('/login', loginValidation, userController.login);
+userRouter.post('/login', userController.login);
 userRouter.get('/albums', auth, userController.getAlbums);
 userRouter.get('/searchClient', searchClientValidation, auth, userController.searchClient);
 

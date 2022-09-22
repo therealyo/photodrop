@@ -44,6 +44,11 @@ class PhotoService {
         await Photo.save(photos);
         return links;
     }
+
+    async removeWatermark(photoName: string): Promise<string> {
+        await Photo.removeWatermark(photoName);
+        return `removed watermark from ${photoName}`;
+    }
 }
 
 export default new PhotoService();

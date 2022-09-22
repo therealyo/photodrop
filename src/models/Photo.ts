@@ -46,6 +46,10 @@ export class Photo implements PhotoInterface {
         await connection.query('INSERT INTO photos (photoId, albumId, waterMark) VALUES ?', [insertValues]);
     }
 
+    static async removeWatermark(photoName: string) {
+        await connection.query('UPDATE photos SET waterMark=? WHERE photoId=?', [[0], [photoName]]);
+    }
+
     private async getPhotoNumbersRelations(): Promise<(string | number)[][]> {
         const ids = [] as (number | undefined)[];
         for (const number of this.numbers!) {
