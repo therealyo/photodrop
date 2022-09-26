@@ -13,6 +13,8 @@ export class Photo implements IPhoto {
     numbers?: PhoneNumber[];
     waterMark: boolean;
 
+    // TODO: make watermarks true all the time
+
     constructor(albumId: number, waterMarkStatus: boolean, numbers?: PhoneNumber[]) {
         this.albumId = albumId;
         this.numbers = numbers ? numbers : [];

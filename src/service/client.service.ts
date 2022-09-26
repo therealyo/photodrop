@@ -69,6 +69,8 @@ class ClientService {
         await Client.setPersonalData(client, name, email);
         return 'profile changed';
     }
+    /* TODO: make implementation for client/getAllAlbums 
+       TODO: make implementation for client/getAlbum */
 }
 
 export default new ClientService();

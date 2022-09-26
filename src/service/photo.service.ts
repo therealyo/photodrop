@@ -15,8 +15,24 @@ class PhotoService {
         };
     }
 
+    private getRootForUpload(user: User, albumName: string) {
+        return `albums/${user.login}/${albumName}`;
+    }
+
+    private generateUploadLinks(amount: number) {}
+
+    private createPhotosToUpload(user: User, albumName: string, amount: number, numbers: PhoneNumber[]) {}
+
+    private saveNewNumbers(numbers: PhoneNumber[]) {}
+
     async savePhotos(user: User, albumName: string, amount: number, numbers: PhoneNumber[]): Promise<string[]> {
-        const root = `albums/${user.login}/${albumName}`;
+        const root = this.getRootForUpload(user, albumName);
+        // TODO: refactor this shitty code below
+        // const links = this.generateUploadLinks(amount)
+        // const photosToUpload = this.createPhotosToUpload(user, albumName, amount, numbers)
+        // await this.saveNewNumbers(numbers)
+        // await Photo.save(photosToUpload)
+        // return links
         const links = [] as string[];
         const photos = [] as Photo[];
         const albumId = await Album.getAlbumId(albumName, user.userId!);

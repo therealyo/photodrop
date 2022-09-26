@@ -39,6 +39,7 @@ class UserService {
     }
 
     async searchClient(user: User, contains: string): Promise<ClientData | undefined> {
+        // TODO: change implementation to suggest clients while input, not after full number has been entered
         const foundClient = await User.searchClient(user, contains);
         if (foundClient) {
             const { number: clientNumber } = foundClient;
