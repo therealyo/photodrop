@@ -5,8 +5,7 @@ class AlbumController {
     async createAlbum(req: Request, res: Response, next: NextFunction) {
         try {
             const { name: albumName, location, date, user } = req.body;
-            const album = await albumService.createAlbum(user, albumName, location, date);
-            const message = await album.save();
+            const message = await albumService.createAlbum(user, albumName, location, date);
             return res.status(200).json({
                 status: 200,
                 message: message

@@ -9,19 +9,19 @@ export class Album implements AlbumInterface {
     albumName: string;
     userId: number;
     location: string;
-    date: string;
+    date: string | Date;
     path: string;
     photos?: { url: string; watermark: boolean }[];
 
-    constructor(albumName: string, user: User, location: string, date: string) {
+    constructor(albumName: string, user: User, location: string, date: string | undefined) {
         this.albumName = albumName;
         this.userId = user.userId!;
         this.location = location;
-        this.date = date;
+        this.date = date ? date : new Date();
         this.path = `albums/${user.login}/${albumName}/`;
     }
 
-    async save(): Promise<string> {
+    async save(): Promise<void> {
         try {
             await connection.query('INSERT INTO albums (albumName, userId, location, date, path) VALUES (?);', [
                 [this.albumName, this.userId, this.location, this.date, this.path]
@@ -29,8 +29,6 @@ export class Album implements AlbumInterface {
         } catch (err) {
             throw new ApiError(400, `Album ${this.albumName} already exists`);
         }
-
-        return `Added ${this.albumName}`;
     }
 
     static async getAlbumId(albumName: string, userId: number): Promise<number> {

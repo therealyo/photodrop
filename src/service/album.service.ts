@@ -14,11 +14,12 @@ class AlbumService {
         };
     }
 
-    async createAlbum(user: User, albumName: string, location: string, date: string): Promise<Album> {
+    async createAlbum(user: User, albumName: string, location: string, date: string | undefined): Promise<string> {
         const album = new Album(albumName, user, location, date);
         const params = this.getParams(`albums/${user.login}/${albumName}/`);
+        await album.save();
         await bucket.putObject(params).promise();
-        return album;
+        return `Added ${album.albumName}`;
     }
 
     async deleteAlbum(albumName: string, userName: string): Promise<void> {

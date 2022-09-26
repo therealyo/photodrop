@@ -32,6 +32,7 @@ export class User implements UserInterface {
     static async getUserData(arg: string | number): Promise<User[]> {
         const param = typeof arg === 'string' ? 'login' : 'userId';
         const query = await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg]);
+        console.log(JSON.parse(JSON.stringify(query))[0]);
         return JSON.parse(JSON.stringify(query))[0];
     }
 
