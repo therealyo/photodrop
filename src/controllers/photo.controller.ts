@@ -4,10 +4,10 @@ import photoService from '../service/photo.service';
 class PhotoController {
     async savePhotos(req: Request, res: Response, next: NextFunction) {
         try {
-            const { albumName } = req.params;
+            const { name } = req.params;
             const { amount, numbers, user } = req.body;
 
-            const links = await photoService.savePhotos(user, albumName, amount, numbers);
+            const links = await photoService.savePhotos(user, name, amount, numbers);
 
             return res.status(200).json({
                 status: 200,

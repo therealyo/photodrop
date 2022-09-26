@@ -36,10 +36,7 @@ class UserController {
         try {
             const { user } = req.body;
             const albums = await userService.getAlbums(user);
-            return res.status(200).json({
-                status: 200,
-                data: albums
-            });
+            return res.status(200).json(albums);
         } catch (err) {
             next(err);
         }

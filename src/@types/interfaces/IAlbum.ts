@@ -1,6 +1,6 @@
 export interface IAlbum {
     readonly albumId?: number;
-    readonly albumName: string;
+    readonly name: string;
     readonly userId: number;
     readonly location: string;
     readonly date: string | Date;

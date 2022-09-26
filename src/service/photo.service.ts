@@ -15,11 +15,11 @@ class PhotoService {
         };
     }
 
-    async savePhotos(user: User, albumName: string, amount: number, numbers: string[]): Promise<string[]> {
-        const root = `${user.login}/${albumName}`;
+    async savePhotos(user: User, name: string, amount: number, numbers: string[]): Promise<string[]> {
+        const root = `${user.login}/${name}`;
         const links = [] as string[];
         const photos = [] as Photo[];
-        const albumId = await Album.getAlbumId(albumName, user.userId!);
+        const albumId = await Album.getAlbumId(name, user.userId!);
         let photosUntilWaterMark = await User.photosUntilWaterMark(user);
 
         for (let i = 0; i < amount; i++) {

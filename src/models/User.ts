@@ -48,14 +48,16 @@ export class User implements IUser {
         const result = getQueryResult(
             await connection.query(
                 'SELECT *  FROM numbers INNER JOIN usersPhones ON numbers.numberId=usersPhones.numberId WHERE userId=? AND number=?;',
-                [[user.userId], [validNumber]]
+                [[user.userId], [contains]]
             )
         );
         return result[0];
     }
 
     static async getUserAlbums(user: User): Promise<Album[]> {
-        const result = getQueryResult(await connection.query('SELECT * FROM albums WHERE userId=?', [[user.userId!]]));
+        const result = getQueryResult(
+            await connection.query('SELECT name, location, date FROM albums WHERE userId=?', [[user.userId!]])
+        );
         return result;
     }
 

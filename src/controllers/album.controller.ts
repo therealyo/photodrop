@@ -4,8 +4,8 @@ import albumService from '../service/album.service';
 class AlbumController {
     async createAlbum(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name: albumName, location, date, user } = req.body;
-            const message = await albumService.createAlbum(user, albumName, location, date);
+            const { name: name, location, date, user } = req.body;
+            const message = await albumService.createAlbum(user, name, location, date);
             return res.status(200).json({
                 status: 200,
                 message: message
@@ -17,12 +17,12 @@ class AlbumController {
 
     async deleteAlbum(req: Request, res: Response, next: NextFunction) {
         try {
-            const { albumName } = req.params;
+            const { name } = req.params;
             const { userName } = req.body;
-            await albumService.deleteAlbum(albumName, userName);
+            await albumService.deleteAlbum(name, userName);
             return res.status(200).json({
                 status: 200,
-                message: `Deleted ${albumName}`
+                message: `Deleted ${name}`
             });
         } catch (err) {
             next(err);
@@ -31,9 +31,9 @@ class AlbumController {
 
     async getAlbum(req: Request, res: Response, next: NextFunction) {
         try {
-            const { albumName } = req.params;
+            const { name } = req.params;
             const { user } = req.body;
-            const albumData = await albumService.getAlbum(user.userId, albumName);
+            const albumData = await albumService.getAlbum(user.userId, name);
 
             return res.status(200).json({
                 status: 200,

@@ -6,10 +6,10 @@ import { createAlbumValidation, deleteAlbumValidation } from '../validation/albu
 export const albumRouter = Router();
 
 // api/albums routess
-albumRouter.get('/:albumName', auth, albumController.getAlbum); //done
+albumRouter.get('/:name', auth, albumController.getAlbum); //done
 
 albumRouter.post('/', createAlbumValidation, auth, albumController.createAlbum); //done
 
-albumRouter.delete('/:albumName', deleteAlbumValidation, albumController.deleteAlbum); //done
+albumRouter.delete('/:name', deleteAlbumValidation, albumController.deleteAlbum); //done
 
 // export default albumRouter;

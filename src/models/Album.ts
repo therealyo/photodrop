@@ -7,43 +7,43 @@ import { getQueryResult } from '../service/query.service';
 
 export class Album implements IAlbum {
     albumId?: number;
-    albumName: string;
+    name: string;
     userId: number;
     location: string;
     date: string | Date;
     path: string;
     photos?: { url: string; watermark: boolean }[];
 
-    constructor(albumName: string, user: User, location: string, date: string | undefined) {
-        this.albumName = albumName;
+    constructor(name: string, user: User, location: string, date: string | undefined) {
+        this.name = name;
         this.userId = user.userId!;
         this.location = location;
         this.date = date ? date : new Date();
-        this.path = `albums/${user.login}/${albumName}/`;
+        this.path = `albums/${user.login}/${name}/`;
     }
 
     async save(): Promise<void> {
         try {
-            await connection.query('INSERT INTO albums (albumName, userId, location, date, path) VALUES (?);', [
-                [this.albumName, this.userId, this.location, this.date, this.path]
+            await connection.query('INSERT INTO albums (name, userId, location, date, path) VALUES (?);', [
+                [this.name, this.userId, this.location, this.date, this.path]
             ]);
         } catch (err) {
-            throw new ApiError(400, `Album ${this.albumName} already exists`);
+            throw new ApiError(400, `Album ${this.name} already exists`);
         }
     }
 
-    static async getAlbumId(albumName: string, userId: number): Promise<number> {
+    static async getAlbumId(name: string, userId: number): Promise<number> {
         try {
-            const albumData = await this.getAlbumData(albumName, userId);
+            const albumData = await this.getAlbumData(name, userId);
             return albumData.albumId!;
         } catch (err) {
-            throw new ApiError(404, `Album ${albumName} does not exist`);
+            throw new ApiError(404, `Album ${name} does not exist`);
         }
     }
 
-    static async getAlbumData(albumName: string, userId: number): Promise<Album> {
+    static async getAlbumData(name: string, userId: number): Promise<Album> {
         const result = getQueryResult(
-            await connection.query(`SELECT * FROM albums WHERE albumName=? and userId=?`, [[albumName], [userId]])
+            await connection.query(`SELECT * FROM albums WHERE name=? and userId=?`, [[name], [userId]])
         );
         return result[0];
     }
@@ -60,8 +60,8 @@ export class Album implements IAlbum {
         return photos.length;
     }
 
-    static async delete(albumName: string, userId: number): Promise<string> {
-        await connection.query('DELETE FROM albums WHERE albumName=? AND userId=?', [[albumName], [userId]]);
-        return `Deleted ${albumName}`;
+    static async delete(name: string, userId: number): Promise<string> {
+        await connection.query('DELETE FROM albums WHERE name=? AND userId=?', [[name], [userId]]);
+        return `Deleted ${name}`;
     }
 }

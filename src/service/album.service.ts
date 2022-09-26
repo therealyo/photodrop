@@ -14,23 +14,23 @@ class AlbumService {
         };
     }
 
-    async createAlbum(user: User, albumName: string, location: string, date: string | undefined): Promise<string> {
-        const album = new Album(albumName, user, location, date);
-        const params = this.getParams(`albums/${user.login}/${albumName}/`);
+    async createAlbum(user: User, name: string, location: string, date: string | undefined): Promise<string> {
+        const album = new Album(name, user, location, date);
+        const params = this.getParams(`albums/${user.login}/${name}/`);
         await album.save();
         await bucket.putObject(params).promise();
-        return `Added ${album.albumName}`;
+        return `Added ${album.name}`;
     }
 
-    async deleteAlbum(albumName: string, userName: string): Promise<void> {
+    async deleteAlbum(name: string, userName: string): Promise<void> {
         const { userId } = await User.getUserData(userName);
-        const params = this.getParams(`albums/${userName}/${albumName}/`);
+        const params = this.getParams(`albums/${userName}/${name}/`);
         await bucket.deleteObject(params).promise();
-        await Album.delete(albumName, userId!);
+        await Album.delete(name, userId!);
     }
 
-    async getAlbum(userId: number, albumName: string) {
-        const albumData = await Album.getAlbumData(albumName, userId);
+    async getAlbum(userId: number, name: string) {
+        const albumData = await Album.getAlbumData(name, userId);
         if (albumData) {
             const albumPhotos = await Album.getAlbumPhotos(albumData.albumId!);
             const photos = albumPhotos.map((photo) => {
@@ -40,7 +40,7 @@ class AlbumService {
                 };
             });
             return {
-                name: albumData.albumName,
+                name: albumData.name,
                 location: albumData.location,
                 date: albumData.date,
                 photos: photos
