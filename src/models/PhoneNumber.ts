@@ -1,8 +1,8 @@
-import { NumberInterface } from '../@types/interfaces/NumberInterface';
+import { IPhoneNumber } from './../@types/interfaces/IPhoneNumber';
 import connection from '../connectors/sql.connector';
 import { Photo } from './Photo';
 
-export class PhoneNumber implements NumberInterface {
+export class PhoneNumber implements IPhoneNumber {
     number: string;
     userId: number;
 

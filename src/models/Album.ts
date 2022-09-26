@@ -1,10 +1,11 @@
 import connection from '../connectors/sql.connector';
-import { AlbumInterface } from '../@types/interfaces/AlbumInterface';
+import { IAlbum } from '../@types/interfaces/IAlbum';
 import { User } from './User';
 import { ApiError } from '../errors/api.error';
 import { PhotoId } from '../@types/PhotoId';
+import { getQueryResult } from '../service/query.service';
 
-export class Album implements AlbumInterface {
+export class Album implements IAlbum {
     albumId?: number;
     albumName: string;
     userId: number;
@@ -41,18 +42,17 @@ export class Album implements AlbumInterface {
     }
 
     static async getAlbumData(albumName: string, userId: number): Promise<Album> {
-        const query = await connection.query(`SELECT * FROM albums WHERE albumName=? and userId=?`, [
-            [albumName],
-            [userId]
-        ]);
-        return JSON.parse(JSON.stringify(query))[0][0];
+        const result = getQueryResult(
+            await connection.query(`SELECT * FROM albums WHERE albumName=? and userId=?`, [[albumName], [userId]])
+        );
+        return result[0];
     }
 
     static async getAlbumPhotos(albumId: number): Promise<PhotoId[]> {
-        const query = (await connection.query('SELECT photoId, waterMark FROM photos WHERE albumId=?', [
-            [albumId]
-        ])) as any[];
-        return query[0];
+        const result = getQueryResult(
+            await connection.query('SELECT photoId, waterMark FROM photos WHERE albumId=?', [[albumId]])
+        );
+        return result;
     }
 
     static async countPhotos(album: Album): Promise<number> {

@@ -1,9 +1,10 @@
 import { PhoneNumber } from './PhoneNumber';
-import { UserInterface } from '../@types/interfaces/UserInterface';
+import { IUser } from '../@types/interfaces/IUser';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
+import { getQueryResult } from '../service/query.service';
 
-export class User implements UserInterface {
+export class User implements IUser {
     login: string;
     password: string;
     userId?: number;
@@ -27,36 +28,39 @@ export class User implements UserInterface {
         return `User ${this.login} saved`;
     }
 
-    static async getUserData(id: number): Promise<User[]>;
-    static async getUserData(login: string): Promise<User[]>;
-    static async getUserData(arg: string | number): Promise<User[]> {
+    static async getUserData(id: number): Promise<User>;
+    static async getUserData(login: string): Promise<User>;
+    static async getUserData(arg: string | number): Promise<User> {
         const param = typeof arg === 'string' ? 'login' : 'userId';
-        const query = await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg]);
-        console.log(JSON.parse(JSON.stringify(query))[0]);
-        return JSON.parse(JSON.stringify(query))[0];
+        const result = getQueryResult(
+            await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg])
+        );
+        return result[0];
     }
 
     static async exists(login: string): Promise<boolean> {
         const entries = await User.getUserData(login);
-        return entries.length !== 0 ? true : false;
+        return entries ? true : false;
     }
 
     static async searchClient(user: User, contains: string): Promise<PhoneNumber | undefined> {
         const validNumber = `+${contains.replace(' ', '+')}`.replace('++', '+');
-        const query = (await connection.query(
-            'SELECT *  FROM numbers INNER JOIN usersPhones ON numbers.numberId=usersPhones.numberId WHERE userId=? AND number=?;',
-            [[user.userId], [validNumber]]
-        )) as any[];
-
-        return query[0][0];
+        const result = getQueryResult(
+            await connection.query(
+                'SELECT *  FROM numbers INNER JOIN usersPhones ON numbers.numberId=usersPhones.numberId WHERE userId=? AND number=?;',
+                [[user.userId], [validNumber]]
+            )
+        );
+        return result[0];
     }
 
     static async getUserAlbums(user: User): Promise<Album[]> {
-        const query = (await connection.query('SELECT * FROM albums WHERE userId=?', [[user.userId!]])) as any[];
-        return query[0];
+        const result = getQueryResult(await connection.query('SELECT * FROM albums WHERE userId=?', [[user.userId!]]));
+        return result;
     }
 
     static async countUserPhotos(user: User): Promise<number> {
+        console.log('here');
         const userAlbums = await User.getUserAlbums(user);
         const photoAmounts = await Promise.all(
             userAlbums.map(async (album) => {

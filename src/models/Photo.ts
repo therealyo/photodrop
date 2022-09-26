@@ -1,4 +1,4 @@
-import { PhotoInterface } from '../@types/interfaces/PhotoInterface';
+import { IPhoto } from '../@types/interfaces/IPhoto';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
@@ -6,7 +6,7 @@ import connection from '../connectors/sql.connector';
 import { PhotoId } from '../@types/PhotoId';
 
 const randomBytes = promisify(crypto.randomBytes);
-export class Photo implements PhotoInterface {
+export class Photo implements IPhoto {
     name?: string;
     albumId?: number;
     userId?: number;

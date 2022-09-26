@@ -23,7 +23,7 @@ class UserService {
         if (!(await User.exists(login))) {
             throw ApiError.WrongCredentials();
         }
-        const userData = (await User.getUserData(login))[0];
+        const userData = await User.getUserData(login);
         const isPassValid = await compare(password, userData.password);
 
         if (!isPassValid) {

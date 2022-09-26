@@ -1,4 +1,4 @@
-export interface AlbumInterface {
+export interface IAlbum {
     readonly albumId?: number;
     readonly albumName: string;
     readonly userId: number;

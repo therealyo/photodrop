@@ -23,7 +23,7 @@ class AlbumService {
     }
 
     async deleteAlbum(albumName: string, userName: string): Promise<void> {
-        const { userId } = (await User.getUserData(userName))[0];
+        const { userId } = await User.getUserData(userName);
         const params = this.getParams(`albums/${userName}/${albumName}/`);
         await bucket.deleteObject(params).promise();
         await Album.delete(albumName, userId!);

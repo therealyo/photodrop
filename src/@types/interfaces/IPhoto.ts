@@ -1,4 +1,4 @@
-export interface PhotoInterface {
+export interface IPhoto {
     readonly name?: string;
     readonly albumId?: number;
     readonly link?: string;

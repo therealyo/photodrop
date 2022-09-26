@@ -1,9 +1,10 @@
 import connection from '../connectors/sql.connector';
-import { ClientInterface } from '../@types/interfaces/ClientInterface';
+import { IClient } from '../@types/interfaces/IClient';
 import { Otp } from '../@types/Otp';
 import { Photo } from './Photo';
+import { getQueryResult } from '../service/query.service';
 
-export class Client implements ClientInterface {
+export class Client implements IClient {
     clientId?: number;
     number: string;
     selfieLink?: string;
@@ -42,10 +43,10 @@ export class Client implements ClientInterface {
     }
 
     static async verifyChangeNumber(client: Client, number: string): Promise<boolean> {
-        const query = (await connection.query('SELECT newNumber FROM clients WHERE number=?', [
-            [client.number]
-        ])) as any[];
-        const newNumber = query[0][0].newNumber;
+        const result = getQueryResult(
+            await connection.query('SELECT newNumber FROM clients WHERE number=?', [[client.number]])
+        );
+        const newNumber = result[0].newNumber;
         return number === newNumber;
     }
 
@@ -57,8 +58,8 @@ export class Client implements ClientInterface {
     }
 
     static async getData(number: string | undefined): Promise<Client | undefined> {
-        const res = (await connection.query('SELECT * FROM clients WHERE number=?', [[number]])) as any[];
-        return res[0][0];
+        const result = getQueryResult(await connection.query('SELECT * FROM clients WHERE number=?', [[number]]));
+        return result[0];
     }
 
     static async setSelfie(client: Client, link: string): Promise<void> {

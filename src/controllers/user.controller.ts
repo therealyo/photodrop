@@ -5,8 +5,8 @@ import userService from '../service/user.service';
 class UserController {
     async registration(req: Request, res: Response, next: NextFunction) {
         try {
-            const { login, password, email, fullName } = req.body;
-            const userData = await userService.registration(login, password, email, fullName);
+            const { username, password, email, fullName } = req.body;
+            const userData = await userService.registration(username, password, email, fullName);
 
             return res.status(200).json({
                 status: 200,
@@ -17,10 +17,10 @@ class UserController {
         }
     }
 
-    async login(req: Request, res: Response, next: NextFunction) {
+    async username(req: Request, res: Response, next: NextFunction) {
         try {
-            const { login, password } = req.body;
-            const token = await userService.login(login, password);
+            const { username, password } = req.body;
+            const token = await userService.login(username, password);
 
             return res.status(200).json({
                 status: 200,

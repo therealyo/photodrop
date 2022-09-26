@@ -1,6 +1,6 @@
 import { Otp } from '../Otp';
 
-export interface ClientInterface {
+export interface IClient {
     readonly clientId?: number;
     readonly number: string;
     readonly selfieLink?: string;
