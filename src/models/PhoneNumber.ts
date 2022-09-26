@@ -3,17 +3,22 @@ import connection from '../connectors/sql.connector';
 import { Photo } from './Photo';
 
 export class PhoneNumber implements IPhoneNumber {
-    number: string;
-    userId: number;
+    countryCode: string;
+    phoneNumber: string;
+    userId?: number;
+    number?: string;
 
-    constructor(number: string, userId: number) {
-        this.number = number;
+    constructor(countryCode: string, number: string, userId?: number) {
+        this.countryCode = countryCode;
+        this.phoneNumber = number;
         this.userId = userId;
     }
 
-    static async getId(num: string): Promise<number | undefined> {
+    static async getId(num: PhoneNumber): Promise<number | undefined> {
         try {
-            const query = (await connection.query('SELECT numberId FROM numbers WHERE number=?', [[num]])) as any;
+            const query = (await connection.query('SELECT numberId FROM numbers WHERE number=?', [
+                [num.countryCode + num.phoneNumber]
+            ])) as any;
             return query[0][0].numberId;
         } catch (err) {
             return undefined;
@@ -27,7 +32,7 @@ export class PhoneNumber implements IPhoneNumber {
 
     private static async saveNumbers(phoneNumbers: PhoneNumber[]): Promise<void> {
         const numbers = phoneNumbers.map((num) => {
-            return [num.number];
+            return [num.countryCode + num.phoneNumber];
         });
         await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?', [numbers]);
     }
@@ -35,7 +40,7 @@ export class PhoneNumber implements IPhoneNumber {
     private static async saveUsersRelation(phoneNumbers: PhoneNumber[]): Promise<void> {
         const userNumberRelation = await Promise.all(
             phoneNumbers.map(async (num) => {
-                return [num.userId, await PhoneNumber.getId(num.number)];
+                return [num.userId, await PhoneNumber.getId(num)];
             })
         );
         await connection.query('INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?', [userNumberRelation]);

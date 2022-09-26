@@ -10,10 +10,10 @@ export class Photo implements IPhoto {
     name?: string;
     albumId?: number;
     userId?: number;
-    numbers?: string[];
+    numbers?: PhoneNumber[];
     waterMark: boolean;
 
-    constructor(albumId: number, waterMarkStatus: boolean, numbers?: string[]) {
+    constructor(albumId: number, waterMarkStatus: boolean, numbers?: PhoneNumber[]) {
         this.albumId = albumId;
         this.numbers = numbers ? numbers : [];
         this.waterMark = waterMarkStatus;

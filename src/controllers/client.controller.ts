@@ -43,10 +43,7 @@ class ClientController {
             const { user } = req.body;
             const userData = await clientService.getClient(user);
 
-            return res.status(200).json({
-                status: 200,
-                userData
-            });
+            return res.status(200).json(userData);
         } catch (err) {
             next(err);
         }
@@ -58,8 +55,7 @@ class ClientController {
             const link = await clientService.setSelfie(user);
 
             return res.status(200).json({
-                status: 200,
-                link
+                url: link
             });
         } catch (err) {
             next(err);

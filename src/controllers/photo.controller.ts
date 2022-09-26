@@ -9,10 +9,7 @@ class PhotoController {
 
             const links = await photoService.savePhotos(user, name, amount, numbers);
 
-            return res.status(200).json({
-                status: 200,
-                data: links
-            });
+            return res.status(200).json(links);
         } catch (err) {
             next(err);
         }

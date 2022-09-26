@@ -62,7 +62,6 @@ export class User implements IUser {
     }
 
     static async countUserPhotos(user: User): Promise<number> {
-        console.log('here');
         const userAlbums = await User.getUserAlbums(user);
         const photoAmounts = await Promise.all(
             userAlbums.map(async (album) => {

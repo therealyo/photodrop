@@ -35,10 +35,7 @@ class AlbumController {
             const { user } = req.body;
             const albumData = await albumService.getAlbum(user.userId, name);
 
-            return res.status(200).json({
-                status: 200,
-                data: albumData
-            });
+            return res.status(200).json(albumData);
         } catch (err) {
             next(err);
         }

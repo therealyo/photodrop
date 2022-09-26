@@ -15,11 +15,11 @@ class PhotoService {
         };
     }
 
-    async savePhotos(user: User, name: string, amount: number, numbers: string[]): Promise<string[]> {
-        const root = `${user.login}/${name}`;
+    async savePhotos(user: User, albumName: string, amount: number, numbers: PhoneNumber[]): Promise<string[]> {
+        const root = `albums/${user.login}/${albumName}`;
         const links = [] as string[];
         const photos = [] as Photo[];
-        const albumId = await Album.getAlbumId(name, user.userId!);
+        const albumId = await Album.getAlbumId(albumName, user.userId!);
         let photosUntilWaterMark = await User.photosUntilWaterMark(user);
 
         for (let i = 0; i < amount; i++) {
@@ -32,12 +32,12 @@ class PhotoService {
             const photo = new Photo(albumId, needWaterMark, numbers);
             await photo.setName();
             photos.push(photo);
-            const params = this.getParams(`${root}/${photo.name}.jpg`);
+            const params = this.getParams(`albums/${root}/${photo.name}.jpg`);
             links.push(await getPresignedUrl('putObject', params));
         }
 
         const phoneNumbers = numbers.map((num) => {
-            return new PhoneNumber(num, user.userId!);
+            return new PhoneNumber(num.countryCode, num.phoneNumber, user.userId!);
         });
 
         await PhoneNumber.save(phoneNumbers);

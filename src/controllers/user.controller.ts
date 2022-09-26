@@ -9,7 +9,6 @@ class UserController {
             const userData = await userService.registration(username, password, email, fullName);
 
             return res.status(200).json({
-                status: 200,
                 message: userData
             });
         } catch (err) {
@@ -23,7 +22,6 @@ class UserController {
             const token = await userService.login(username, password);
 
             return res.status(200).json({
-                status: 200,
                 message: 'Successfully logged in',
                 token: token
             });
@@ -56,10 +54,7 @@ class UserController {
 
             const clientNumber = await userService.searchClient(user, contains);
 
-            return res.status(200).json({
-                status: 200,
-                data: clientNumber ? clientNumber : 'not found'
-            });
+            return res.status(200).json(clientNumber ? clientNumber : { message: 'Not Found' });
         } catch (err) {
             next(err);
         }

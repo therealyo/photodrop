@@ -44,7 +44,7 @@ class UserService {
             const { number: clientNumber } = foundClient;
             const clientData = await Client.getData(clientNumber);
             return {
-                number: phoneNumberService.splitNumber(clientNumber),
+                number: phoneNumberService.splitNumber(clientNumber!),
                 name: clientData?.name
             };
         }
