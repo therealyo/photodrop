@@ -10,10 +10,11 @@ class TokenService {
         });
         return `Bearer ${accessToken}`;
     }
-    async validateToken(token: string): Promise<User> {
+    async validateToken(token: string): Promise<User | undefined> {
         try {
             const userData = jwt.verify(token, process.env.SECRET!) as User;
-            return userData;
+            if (await User.exists(userData.login)) return userData;
+            else throw ApiError.UnauthorizedError();
         } catch (err) {
             throw ApiError.UnauthorizedError();
         }

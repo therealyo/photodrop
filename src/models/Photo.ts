@@ -15,10 +15,10 @@ export class Photo implements IPhoto {
 
     // TODO: make watermarks true all the time
 
-    constructor(albumId: number, waterMarkStatus: boolean, numbers?: PhoneNumber[]) {
+    constructor(albumId: number, numbers?: PhoneNumber[]) {
         this.albumId = albumId;
         this.numbers = numbers ? numbers : [];
-        this.waterMark = waterMarkStatus;
+        this.waterMark = true;
     }
 
     async setName(): Promise<void> {

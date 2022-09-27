@@ -61,19 +61,19 @@ export class User implements IUser {
         return result;
     }
 
-    static async countUserPhotos(user: User): Promise<number> {
-        const userAlbums = await User.getUserAlbums(user);
-        const photoAmounts = await Promise.all(
-            userAlbums.map(async (album) => {
-                const amount = await Album.countPhotos(album);
-                return amount;
-            })
-        );
-        return photoAmounts.reduce((prev, next) => prev + next, 0);
-    }
+    // static async countUserPhotos(user: User): Promise<number> {
+    //     const userAlbums = await User.getUserAlbums(user);
+    //     const photoAmounts = await Promise.all(
+    //         userAlbums.map(async (album) => {
+    //             const amount = await Album.countPhotos(album);
+    //             return amount;
+    //         })
+    //     );
+    //     return photoAmounts.reduce((prev, next) => prev + next, 0);
+    // }
 
-    static async photosUntilWaterMark(user: User): Promise<number> {
-        const photoAmount = await User.countUserPhotos(user);
-        return photoAmount - 3;
-    }
+    // static async photosUntilWaterMark(user: User): Promise<number> {
+    //     const photoAmount = await User.countUserPhotos(user);
+    //     return photoAmount - 3;
+    // }
 }
