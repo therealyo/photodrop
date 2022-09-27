@@ -2,6 +2,7 @@ import { User } from '../models/User';
 import { verify, sign } from 'jsonwebtoken';
 import { ApiError } from '../errors/api.error';
 import { Client } from '../models/Client';
+// import { IUser } from '../@types/interfaces/IUser';
 
 class TokenService {
     async generateToken(payload: User | Client): Promise<string> {

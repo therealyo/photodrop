@@ -5,5 +5,6 @@ import middyJsonBodyParser from '@middy/http-json-body-parser';
 import { validate } from '../middleware/validator.middleware';
 
 export const middyfy = (handler, schema?) => {
-    return middy(handler).use(middyJsonBodyParser()).use(validate(schema)).use(httpErrorHandler());
+    if (schema) return middy(handler).use(middyJsonBodyParser()).use(validate(schema)).use(httpErrorHandler());
+    else return middy(handler).use(middyJsonBodyParser()).use(httpErrorHandler());
 };
