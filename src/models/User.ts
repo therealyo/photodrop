@@ -1,10 +1,9 @@
 import { PhoneNumber } from './PhoneNumber';
-import { IUser } from '../@types/interfaces/IUser';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
-import { getQueryResult } from '../service/query.service';
+import { getQueryResult } from '../services/query.service';
 
-export class User implements IUser {
+export class User {
     login: string;
     password: string;
     userId?: number;
@@ -33,7 +32,7 @@ export class User implements IUser {
     static async getUserData(arg: string | number): Promise<User> {
         const param = typeof arg === 'string' ? 'login' : 'userId';
         const result = getQueryResult(
-            await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg])
+            await connection.query(`SELECT userId, login, password, email, fullName FROM users WHERE ${param}=?`, [arg])
         );
         return result[0];
     }

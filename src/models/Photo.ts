@@ -1,12 +1,10 @@
-import { IPhoto } from '../@types/interfaces/IPhoto';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
-import { PhotoId } from '../@types/PhotoId';
 
 const randomBytes = promisify(crypto.randomBytes);
-export class Photo implements IPhoto {
+export class Photo {
     name?: string;
     albumId?: number;
     userId?: number;

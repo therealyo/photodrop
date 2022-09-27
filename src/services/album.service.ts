@@ -1,5 +1,5 @@
 import { ApiError } from './../errors/api.error';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { Album } from '../models/Album';
 import { User } from '../models/User';
 import bucket from '../connectors/s3.connector';

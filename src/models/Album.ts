@@ -1,11 +1,10 @@
 import connection from '../connectors/sql.connector';
-import { IAlbum } from '../@types/interfaces/IAlbum';
 import { User } from './User';
 import { ApiError } from '../errors/api.error';
 import { PhotoId } from '../@types/PhotoId';
-import { getQueryResult } from '../service/query.service';
+import { getQueryResult } from '../services/query.service';
 
-export class Album implements IAlbum {
+export class Album {
     albumId?: number;
     name: string;
     userId: number;

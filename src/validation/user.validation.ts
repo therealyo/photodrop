@@ -1,40 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
-import { validate } from '../middleware/validate.middleware';
+import { object, string } from 'yup';
 
-export const signupValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        username: Joi.string().pattern(new RegExp('^[a-zA-Z_]*$')).required(),
-        password: Joi.string().required(),
-        email: Joi.string().email(),
-        fullName: Joi.string()
-    });
-    try {
-        validate(req, next, schema, 'body');
-    } catch (err) {
-        next(err);
-    }
+export const registrationSchema = {
+    body: object({
+        username: string().matches(new RegExp('^[a-zA-Z_]*$')).required(),
+        password: string().required(),
+        email: string().email(),
+        fullName: string()
+    })
 };
 
-export const loginValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        username: Joi.string().pattern(new RegExp('^[a-zA-Z_]*$')).required(),
-        password: Joi.string().required()
-    });
-    try {
-        validate(req, next, schema, 'body');
-    } catch (err) {
-        next(err);
-    }
+export const loginSchema = {
+    body: object({
+        username: string().matches(new RegExp('^[a-zA-Z_]*$')).required(),
+        password: string().required()
+    })
 };
 
-export const searchClientValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        contains: Joi.string().required()
-    });
-    try {
-        validate(req, next, schema, 'query');
-    } catch (err) {
-        next(err);
-    }
-};
+export const getAlbumsSchema = {};
+export const searchClientSchema = {};
