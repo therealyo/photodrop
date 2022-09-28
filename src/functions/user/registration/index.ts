@@ -6,7 +6,8 @@ export const registration = {
         {
             http: {
                 method: 'post',
-                path: 'signup'
+                path: 'signup',
+                cors: true
             }
         }
     ]

@@ -6,7 +6,8 @@ export const login = {
         {
             http: {
                 method: 'post',
-                path: 'login'
+                path: 'login',
+                cors: true
             }
         }
     ]

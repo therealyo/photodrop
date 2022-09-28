@@ -10,7 +10,8 @@ export const getAlbumData = {
                     name: 'auth',
                     type: 'request',
                     identitySource: 'method.request.header.Authorization'
-                }
+                },
+                cors: true
             }
         }
     ]

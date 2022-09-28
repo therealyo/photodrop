@@ -11,7 +11,8 @@ export const getAlbums = {
                     name: 'auth',
                     type: 'request',
                     identitySource: 'method.request.header.Authorization'
-                }
+                },
+                cors: true
             }
         }
     ]

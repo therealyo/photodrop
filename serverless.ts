@@ -1,8 +1,7 @@
-import { getAlbumData } from './src/functions/album/getAlbumData/index';
 import type { AWS } from '@serverless/typescript';
 import { auth } from './src/functions/auth';
 import { registration, login, getAlbums } from './src/functions/user';
-import { createAlbum } from './src/functions/album';
+import { createAlbum, getAlbumData } from './src/functions/album';
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
@@ -22,7 +21,6 @@ const serverlessConfiguration: AWS = {
             NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000'
         }
     },
-    // import the function via paths
     functions: {
         auth,
         registration,
