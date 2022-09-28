@@ -2,8 +2,9 @@ import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
 import { getQueryResult } from '../services/query.service';
+import { IUser } from '../@types/interfaces/IUser';
 
-export class User {
+export class User implements IUser {
     login: string;
     password: string;
     userId?: number;

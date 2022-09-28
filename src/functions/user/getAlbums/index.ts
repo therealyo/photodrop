@@ -1,12 +1,11 @@
-// import { getAlbum } from './handler';
-import { handlerPath } from '../../libs/handler-resolver';
+import { handlerPath } from '../../../libs/handler-resolver';
 
-export const createAlbum = {
-    handler: `${handlerPath(__dirname)}/handler.createAlbum`,
+export const getAlbums = {
+    handler: `${handlerPath(__dirname)}/handler.getAlbums`,
     events: [
         {
             http: {
-                method: 'post',
+                method: 'get',
                 path: 'albums',
                 authorizer: {
                     name: 'auth',

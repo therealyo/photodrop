@@ -2,7 +2,7 @@ import { User } from '../models/User';
 import { verify, sign } from 'jsonwebtoken';
 import { ApiError } from '../errors/api.error';
 import { Client } from '../models/Client';
-// import { IUser } from '../@types/interfaces/IUser';
+import { IUser } from '../@types/interfaces/IUser';
 
 class TokenService {
     async generateToken(payload: User | Client): Promise<string> {
@@ -14,23 +14,25 @@ class TokenService {
         });
         return `Bearer ${accessToken}`;
     }
-    async validateToken(token: string): Promise<User | undefined> {
+
+    async validateToken(token: string): Promise<IUser | undefined> {
         try {
             const userData = verify(token, process.env.SECRET!) as User;
             if (await User.exists(userData.login)) {
-                console.log('exists');
-                return userData;
+                return {
+                    userId: userData.userId,
+                    login: userData.login,
+                    email: userData.email,
+                    fullName: userData.fullName
+                };
             } else {
-                console.log('here1');
-
                 throw ApiError.UnauthorizedError();
             }
         } catch (err) {
-            console.log('here2');
-
             throw ApiError.UnauthorizedError();
         }
     }
+
     async getBearerToken(authHeader: string): Promise<string> {
         const token = authHeader.split(' ')[1];
         if (!token) {

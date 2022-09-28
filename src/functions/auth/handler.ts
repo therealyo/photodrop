@@ -1,6 +1,6 @@
 import { ApiError } from './../../errors/api.error';
 import tokenService from '../../services/token.service';
-import { User } from '../../models/User';
+import { IUser } from '../../@types/interfaces/IUser';
 
 export const auth = async (event: any) => {
     const authHeader = event.headers.Authorization;
@@ -22,9 +22,9 @@ export const auth = async (event: any) => {
     }
 };
 
-const generatePolicy = (status: { allow: boolean }, userData?: User) => {
+const generatePolicy = (status: { allow: boolean }, userData?: IUser) => {
     return {
-        principalId: 'token',
+        principalId: 'user',
         policyDocument: {
             Version: '2012-10-17',
             Statement: [

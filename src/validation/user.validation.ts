@@ -15,6 +15,3 @@ export const loginSchema = {
         password: string().required()
     })
 };
-
-export const getAlbumsSchema = {};
-export const searchClientSchema = {};
