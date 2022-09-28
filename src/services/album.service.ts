@@ -29,8 +29,8 @@ class AlbumService {
         await Album.delete(name, userId!);
     }
 
-    async getAlbum(userId: number, name: string) {
-        const albumData = await Album.getAlbumData(name, userId);
+    async getAlbum(user: User, name: string) {
+        const albumData = await Album.getAlbumData(user, name);
         if (albumData) {
             const albumPhotos = await Album.getAlbumPhotos(albumData.albumId!);
             const photos = albumPhotos.map((photo) => {

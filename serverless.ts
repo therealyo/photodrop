@@ -1,6 +1,8 @@
+import { getAlbumData } from './src/functions/album/getAlbumData/index';
 import type { AWS } from '@serverless/typescript';
 import { auth } from './src/functions/auth';
 import { registration, login, getAlbums } from './src/functions/user';
+import { createAlbum } from './src/functions/album';
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
@@ -21,7 +23,14 @@ const serverlessConfiguration: AWS = {
         }
     },
     // import the function via paths
-    functions: { auth, registration, login, getAlbums },
+    functions: {
+        auth,
+        registration,
+        login,
+        getAlbums,
+        createAlbum,
+        getAlbumData
+    },
     package: { individually: true },
     custom: {
         esbuild: {

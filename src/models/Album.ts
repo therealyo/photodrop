@@ -31,18 +31,18 @@ export class Album {
         }
     }
 
-    static async getAlbumId(name: string, userId: number): Promise<number> {
+    static async getAlbumId(user: User, name: string): Promise<number> {
         try {
-            const albumData = await this.getAlbumData(name, userId);
+            const albumData = await this.getAlbumData(user, name);
             return albumData.albumId!;
         } catch (err) {
             throw new ApiError(404, `Album ${name} does not exist`);
         }
     }
 
-    static async getAlbumData(name: string, userId: number): Promise<Album> {
+    static async getAlbumData(user: User, name: string): Promise<Album> {
         const result = getQueryResult(
-            await connection.query(`SELECT * FROM albums WHERE name=? and userId=?`, [[name], [userId]])
+            await connection.query(`SELECT * FROM albums WHERE name=? and userId=?`, [[name], [user.userId!]])
         );
         return result[0];
     }
