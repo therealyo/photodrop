@@ -2,8 +2,9 @@ import connection from '../connectors/sql.connector';
 import { Otp } from '../@types/Otp';
 import { Photo } from './Photo';
 import { getQueryResult } from '../services/query.service';
+import { IClient } from '../@types/interfaces/IClient';
 
-export class Client {
+export class Client implements IClient {
     clientId?: number;
     number: string;
     selfieLink?: string;

@@ -7,6 +7,8 @@ export const registrationSchema = {
         email: string().email(),
         fullName: string()
     })
+        .default(undefined)
+        .required()
 };
 
 export const loginSchema = {
@@ -14,4 +16,6 @@ export const loginSchema = {
         username: string().matches(new RegExp('^[a-zA-Z_]*$')).required(),
         password: string().required()
     })
+        .default(undefined)
+        .required()
 };

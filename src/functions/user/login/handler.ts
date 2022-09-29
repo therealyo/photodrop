@@ -1,5 +1,6 @@
+import { ValidatedEventAPIGatewayProxyEvent } from './../../../libs/api-gateway';
 import { handleError } from '../../../errors/errorHandler';
-import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '../../../libs/api-gateway';
+import { formatJSONResponse } from '../../../libs/api-gateway';
 import { middyfy } from '../../../libs/lambda';
 import userService from '../../../services/user.service';
 import { loginSchema } from '../../../validation/user.validation';

@@ -2,11 +2,12 @@ import type { AWS } from '@serverless/typescript';
 import { auth } from './src/functions/auth';
 import { registration, login, getAlbums } from './src/functions/user';
 import { createAlbum, getAlbumData } from './src/functions/album';
+import { sendOtp, verifyOtp, setClientData, getClient } from './src/functions/client/';
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
     frameworkVersion: '3',
-    plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv'],
+    plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv-plugin'],
     provider: {
         name: 'aws',
         region: 'eu-west-2',
@@ -27,9 +28,12 @@ const serverlessConfiguration: AWS = {
         login,
         getAlbums,
         createAlbum,
-        getAlbumData
+        getAlbumData,
+        sendOtp,
+        verifyOtp,
+        setClientData,
+        getClient
     },
-    package: { individually: true },
     custom: {
         esbuild: {
             bundle: true,

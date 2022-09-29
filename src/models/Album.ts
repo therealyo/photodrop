@@ -17,7 +17,7 @@ export class Album {
         this.name = name;
         this.userId = user.userId!;
         this.location = location;
-        this.date = date ? date : new Date();
+        this.date = new Date(date).toString() !== 'Invalid Date' ? new Date(date) : new Date();
         this.path = `albums/${user.login}/${name}/`;
     }
 
