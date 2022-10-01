@@ -18,7 +18,7 @@ export class Album {
         this.userId = user.userId!;
         this.location = location;
         this.date = new Date(date).toString() !== 'Invalid Date' ? new Date(date) : new Date();
-        this.path = `albums/${user.login}/${name}/`;
+        this.path = `albums/${user.email}/${name}/`;
     }
 
     async save(): Promise<void> {
@@ -33,7 +33,7 @@ export class Album {
 
     static async getAlbumId(user: User, name: string): Promise<number> {
         try {
-            const albumData = await this.getAlbumData(user, name);
+            const albumData = await Album.getAlbumData(user, name);
             return albumData.albumId!;
         } catch (err) {
             throw new ApiError(404, `Album ${name} does not exist`);
@@ -41,8 +41,10 @@ export class Album {
     }
 
     static async getAlbumData(user: User, name: string): Promise<Album> {
+        console.log('User: ', user);
+        console.log('Album name: ', name);
         const result = getQueryResult(
-            await connection.query(`SELECT * FROM albums WHERE name=? and userId=?`, [[name], [user.userId!]])
+            await connection.query(`SELECT * FROM albums WHERE name=? AND userId=?`, [[name], [user.userId!]])
         );
         return result[0];
     }

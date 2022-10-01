@@ -14,18 +14,18 @@ class UserService {
         const hashedPassword = await hash(password, 10);
         const user = new User(login, hashedPassword, email, fullName);
 
-        if (!(await User.exists(login))) {
+        if (!(await User.exists(email))) {
             return await user.save();
         } else {
-            throw ApiError.BadRequest(`User ${login} already exists`);
+            throw ApiError.BadRequest(`User ${email} already exists`);
         }
     }
 
-    async login(login: string, password: string): Promise<string> {
-        if (!(await User.exists(login))) {
+    async login(email: string, password: string): Promise<string> {
+        if (!(await User.exists(email))) {
             throw ApiError.WrongCredentials();
         }
-        const userData = await User.getUserData(login);
+        const userData = await User.getUserData(email);
         const isPassValid = await compare(password, userData.password);
         if (!isPassValid) {
             throw ApiError.WrongCredentials();

@@ -1,7 +1,10 @@
+import { ApiError } from './../errors/api.error';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
+import { Album } from './Album';
+import { User } from './User';
 
 const randomBytes = promisify(crypto.randomBytes);
 export class Photo {
@@ -9,14 +12,35 @@ export class Photo {
     albumId?: number;
     userId?: number;
     numbers?: PhoneNumber[];
-    waterMark: boolean;
+    fileName: string;
 
     // TODO: make watermarks true all the time
 
-    constructor(albumId: number, numbers?: PhoneNumber[]) {
-        this.albumId = albumId;
-        this.numbers = numbers ? numbers : [];
-        this.waterMark = true;
+    constructor(fileName: string) {
+        this.fileName = fileName;
+    }
+
+    async processFileName() {
+        const split = this.fileName.split('/');
+        console.log('split: ', split);
+        const userName = split[1].replace('%40', '@');
+        const user = await User.getUserData(userName);
+        console.log(user);
+        if (split[0] === 'albums') {
+            this.userId = user.userId;
+            this.albumId = await Album.getAlbumId(user, split[2]);
+            console.log(this.albumId);
+            this.name = split[3];
+        } else if (split[0] === 'selfies') {
+            this.userId = user.userId;
+            this.name = split[2];
+        } else {
+            throw new ApiError(500, 'Something wrong with photo loading');
+        }
+    }
+
+    async save() {
+        await connection.query('INSERT INTO photos (photoId, albumId) VALUES (?)', [[this.name, this.albumId]]);
     }
 
     async setName(): Promise<void> {
@@ -41,7 +65,7 @@ export class Photo {
 
     static async savePhotos(photos: Photo[]): Promise<void> {
         const insertValues = photos.map((photo) => {
-            return [photo.name, photo.albumId, photo.waterMark];
+            return [photo.name, photo.albumId];
         });
         await connection.query('INSERT INTO photos (photoId, albumId, waterMark) VALUES ?', [insertValues]);
     }

@@ -2,9 +2,9 @@ import { object, string } from 'yup';
 
 export const registrationSchema = {
     body: object({
-        username: string().matches(new RegExp('^[a-zA-Z_]*$')).required(),
+        email: string().email().required(),
         password: string().required(),
-        email: string().email(),
+        username: string().matches(new RegExp('^[a-zA-Z_]*$')),
         fullName: string()
     })
         .default(undefined)
@@ -13,7 +13,7 @@ export const registrationSchema = {
 
 export const loginSchema = {
     body: object({
-        username: string().matches(new RegExp('^[a-zA-Z_]*$')).required(),
+        email: string().email().required(),
         password: string().required()
     })
         .default(undefined)

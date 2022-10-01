@@ -9,3 +9,13 @@ jspm_packages
 .esbuild
 
 .env
+
+dist/
+
+test/
+
+index.js
+
+.parcel-cache/
+
+buckets/

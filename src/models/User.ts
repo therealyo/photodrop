@@ -25,13 +25,13 @@ export class User implements IUser {
         await connection.query('INSERT INTO users (login, password, email, fullName) VALUES (?) ;', [
             [this.login, this.password, this.email, this.fullName]
         ]);
-        return `User ${this.login} saved`;
+        return `User ${this.email} saved`;
     }
 
     static async getUserData(id: number): Promise<User>;
-    static async getUserData(login: string): Promise<User>;
+    static async getUserData(email: string): Promise<User>;
     static async getUserData(arg: string | number): Promise<User> {
-        const param = typeof arg === 'string' ? 'login' : 'userId';
+        const param = typeof arg === 'string' ? 'email' : 'userId';
         const result = getQueryResult(
             await connection.query(`SELECT userId, login, password, email, fullName FROM users WHERE ${param}=?`, [arg])
         );

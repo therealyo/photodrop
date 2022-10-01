@@ -1,9 +1,9 @@
 import { BucketParams } from '../@types/BucketParams';
 import { Photo } from '../models/Photo';
-import { getPresignedUrl } from './presignedUrl.service';
 import { PhoneNumber } from '../models/PhoneNumber';
 import { User } from '../models/User';
 import { Album } from '../models/Album';
+import presignedUrlService from './presignedUrl.service';
 
 class PhotoService {
     getParams(key: string): BucketParams {

@@ -16,9 +16,7 @@ class AlbumService {
 
     async createAlbum(user: User, name: string, location: string, date: string | undefined): Promise<string> {
         const album = new Album(name, user, location, date);
-        const params = this.getParams(`albums/${user.login}/${name}/`);
         await album.save();
-        await bucket.putObject(params).promise();
         return `Added ${album.name}`;
     }
 

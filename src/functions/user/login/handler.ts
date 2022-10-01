@@ -7,8 +7,8 @@ import { loginSchema } from '../../../validation/user.validation';
 
 const loginHandler: ValidatedEventAPIGatewayProxyEvent<typeof loginSchema> = async (event: any) => {
     try {
-        const { username, password } = event.body;
-        const token = await userService.login(username, password);
+        const { email, password } = event.body;
+        const token = await userService.login(email, password);
         return formatJSONResponse({ token });
     } catch (err) {
         handleError(err);

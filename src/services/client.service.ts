@@ -3,9 +3,8 @@ import { Client } from '../models/Client';
 import otpService from './otp.service';
 import tokenService from './token.service';
 import phoneService from './phoneNumber.service';
-import { getPresignedUrl } from './presignedUrl.service';
+import presignedUrlService from './presignedUrl.service';
 import { Photo } from '../models/Photo';
-import photoService from './photo.service';
 import { ClientData } from '../@types/ClientData';
 
 class ClientService {
@@ -57,11 +56,10 @@ class ClientService {
         };
     }
 
-    async setSelfie(client: Client): Promise<string> {
+    async setSelfie(client: Client) {
         const selfieName = await Photo.generateName();
-        const params = photoService.getParams(`selfies/${client.selfieFolder}/${selfieName}.jpg`);
-        const link = await getPresignedUrl('putObject', params);
-        await Client.setSelfie(client, selfieName);
+        const link = await presignedUrlService.getPresignedUrl(`selfies/${client.number}/${selfieName}`);
+        // await Client.setSelfie(client, selfieName);
         return link;
     }
 
