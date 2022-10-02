@@ -10,13 +10,14 @@ import { Photo } from '../../../models/Photo';
 const presignedUrlHanlder: ValidatedEventAPIGatewayProxyEvent<typeof getPresignedUrlSchema> = async (event: any) => {
     try {
         const { albumName } = event.pathParameters;
+        const { extension } = event.body;
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
         const photoName = await Photo.generateName();
         const uploadData = await presignedUrlService.getPresignedUrl(
-            `albums/${user.email}/${albumName}/${photoName}.jpg`
+            `albums/${user.email}/${albumName}/${photoName}.${extension}`
         );
 
-        return formatJSONResponse({ data: uploadData });
+        return formatJSONResponse({ data: { key: `${photoName}.${extension}`, ...uploadData } });
     } catch (err) {
         handleError(err);
     }
