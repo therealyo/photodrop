@@ -73,6 +73,11 @@ export class Client implements IClient {
         await connection.query('UPDATE clients SET name=?, email=? WHERE number=?', [[name], [email], [client.number]]);
     }
 
-    static async getAlbums(client: Client) {}
+    static async getAlbums(client: Client) {
+        const clientAlbumsIds = getQueryResult(
+            await connection.query('SELECT DISTINCT albumId FROM numbersOnPhotos WHERE number=?;', [client.number])
+        );
+        return clientAlbumsIds;
+    }
     static async getAlbumData(client: Client, albumId: number) {}
 }

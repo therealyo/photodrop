@@ -29,7 +29,6 @@ export class PhoneNumber {
 
     private static async saveNumbers(numbers: string[]): Promise<void> {
         try {
-            console.log(numbers);
             await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?;', [
                 numbers.map((number) => {
                     return [number];

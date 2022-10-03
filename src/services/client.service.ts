@@ -5,6 +5,7 @@ import tokenService from './token.service';
 import phoneService from './phoneNumber.service';
 import presignedUrlService from './presignedUrl.service';
 import { Photo } from '../models/Photo';
+import { PresignedUrl } from '../@types/PresignedUrl';
 import { ClientData } from '../@types/ClientData';
 
 class ClientService {
@@ -56,7 +57,7 @@ class ClientService {
         };
     }
 
-    async setSelfie(client: Client) {
+    async setSelfie(client: Client): Promise<PresignedUrl> {
         const selfieName = await Photo.generateName();
         const link = await presignedUrlService.getPresignedUrl(`selfies/${client.number}/${selfieName}`);
         // await Client.setSelfie(client, selfieName);
@@ -66,6 +67,10 @@ class ClientService {
     async setPersonalData(client: Client, name: string | undefined, email: string | undefined): Promise<string> {
         await Client.setPersonalData(client, name, email);
         return 'profile changed';
+    }
+
+    async getClientAlbums(client: Client) {
+        return await Client.getAlbums(client);
     }
     /* TODO: make implementation for client/getAllAlbums 
        TODO: make implementation for client/getAlbum */

@@ -61,30 +61,23 @@ export class Photo {
     }
 
     static async savePhotoNumbersRelation(albumId: number, photos: string[], numbers: string[]) {
-        const relations = (
-            await Promise.all(
-                photos.map(async (photo) => {
-                    return await Photo.createPhotoNumbersRelations(albumId, photo, numbers);
-                })
-            )
-        ).flat();
+        const relations = photos
+            .map((photo) => {
+                return Photo.createPhotoNumbersRelations(albumId, photo, numbers);
+            })
+            .flat();
 
+        // const relations = photos.map();
         try {
-            await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId, albumId) VALUES ?;', [relations]);
+            await connection.query('INSERT INTO numbersOnPhotos (photoId, number, albumId) VALUES ?;', [relations]);
         } catch (err) {
             console.log(err);
         }
     }
 
-    static async createPhotoNumbersRelations(
-        albumId: number,
-        photo: string,
-        numbers: string[]
-    ): Promise<(string | number)[][]> {
-        return await Promise.all(
-            numbers.map(async (number) => {
-                return [photo, await PhoneNumber.getId(number), albumId];
-            })
-        );
+    static createPhotoNumbersRelations(albumId: number, photo: string, numbers: string[]) {
+        return numbers.map((number) => {
+            return [photo, number, albumId];
+        });
     }
 }

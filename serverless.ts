@@ -3,7 +3,14 @@ import type { AWS } from '@serverless/typescript';
 import { auth } from './src/functions/auth';
 import { registration, login, getAlbums } from './src/functions/user';
 import { createAlbum, getAlbumData } from './src/functions/album';
-import { sendOtp, verifyOtp, setClientData, getClient, setClientSelfie } from './src/functions/client/';
+import {
+    sendOtp,
+    verifyOtp,
+    setClientData,
+    getClient,
+    setClientSelfie,
+    getClientAlbums
+} from './src/functions/client/';
 import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo';
 
 const serverlessConfiguration: AWS = {
@@ -36,6 +43,7 @@ const serverlessConfiguration: AWS = {
         setClientData,
         setClientSelfie,
         getClient,
+        getClientAlbums,
         handleUpload,
         getPresignedUrl,
         addNumbers
