@@ -67,7 +67,6 @@ export class Photo {
             })
             .flat();
 
-        // const relations = photos.map();
         try {
             await connection.query('INSERT INTO numbersOnPhotos (photoId, number, albumId) VALUES ?;', [relations]);
         } catch (err) {
