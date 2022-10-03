@@ -21,11 +21,12 @@ export class Album {
         this.path = `albums/${user.email}/${name}/`;
     }
 
-    async save(): Promise<void> {
+    async save(): Promise<Album> {
         try {
             await connection.query('INSERT INTO albums (name, userId, location, date, path) VALUES (?);', [
                 [this.name, this.userId, this.location, this.date, this.path]
             ]);
+            return this;
         } catch (err) {
             throw new ApiError(400, `Album ${this.name} already exists`);
         }
@@ -49,7 +50,7 @@ export class Album {
 
     static async getAlbumPhotos(albumId: number): Promise<PhotoId[]> {
         const result = getQueryResult(
-            await connection.query('SELECT photoId, waterMark FROM photos WHERE albumId=?', [[albumId]])
+            await connection.query('SELECT photoId, extension FROM photos WHERE albumId=?', [[albumId]])
         );
         return result;
     }

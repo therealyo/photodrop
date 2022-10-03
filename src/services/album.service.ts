@@ -33,11 +33,11 @@ class AlbumService {
             const albumPhotos = await Album.getAlbumPhotos(albumData.albumId!);
             const photos = albumPhotos.map((photo) => {
                 return {
-                    url: `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.jpg`,
-                    watermark: photo.waterMark!
+                    url: `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.${photo.extension}`
                 };
             });
             return {
+                albumId: albumData.albumId,
                 name: albumData.name,
                 location: albumData.location,
                 date: albumData.date,

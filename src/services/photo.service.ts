@@ -1,11 +1,13 @@
 import { Photo } from '../models/Photo';
 import { PhoneNumber } from '../models/PhoneNumber';
 import { User } from '../models/User';
+import { Album } from '../models/Album';
 
 class PhotoService {
-    async saveNumbers(user: User, numbers: string[], photos: string[]) {
+    async saveNumbers(user: User, albumName: string, numbers: string[], photos: string[]) {
         await PhoneNumber.save(user, numbers);
-        await Photo.save(photos, numbers);
+        const albumId = await Album.getAlbumId(user, albumName);
+        await Photo.save(albumId, photos, numbers);
     }
 }
 

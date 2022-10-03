@@ -56,7 +56,7 @@ export class User implements IUser {
 
     static async getUserAlbums(user: User): Promise<Album[]> {
         const result = getQueryResult(
-            await connection.query('SELECT name, location, date FROM albums WHERE userId=?', [[user.userId!]])
+            await connection.query('SELECT albumId, name, location, date FROM albums WHERE userId=?', [[user.userId!]])
         );
         return result;
     }
@@ -76,4 +76,7 @@ export class User implements IUser {
     //     const photoAmount = await User.countUserPhotos(user);
     //     return photoAmount - 3;
     // }
+
+    // Возвращать данные созданного альбома
+    // При запросе на альюом возвращать его айди
 }

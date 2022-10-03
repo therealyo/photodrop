@@ -9,6 +9,7 @@ export const getPresignedUrlSchema = {
 export const addNumbersSchema = {
     body: object({
         photos: array(string()).required(),
-        numbers: array(string()).required()
+        numbers: array(string()).required(),
+        albumName: string().required()
     })
 };

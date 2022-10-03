@@ -56,43 +56,34 @@ export class Photo {
         return photoName;
     }
 
-    static async save(photos: string[], numbers: string[]): Promise<void> {
-        // await Photo.savePhotos(albumId, photos);
-        await Photo.savePhotoNumbersRelation(photos, numbers);
+    static async save(albumId: number, photos: string[], numbers: string[]): Promise<void> {
+        await Photo.savePhotoNumbersRelation(albumId, photos, numbers);
     }
 
-    static async savePhotos(albumId: number, photos: string[]): Promise<void> {
-        const insertValues = photos.map((photo) => {
-            return [photo, albumId];
-        });
-        try {
-            await connection.query('INSERT INTO photos (photoId, albumId) VALUES ?;', [insertValues]);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    static async savePhotoNumbersRelation(photos: string[], numbers: string[]) {
+    static async savePhotoNumbersRelation(albumId: number, photos: string[], numbers: string[]) {
         const relations = (
             await Promise.all(
                 photos.map(async (photo) => {
-                    return await Photo.createPhotoNumbersRelations(photo, numbers);
+                    return await Photo.createPhotoNumbersRelations(albumId, photo, numbers);
                 })
             )
         ).flat();
-        console.log(relations);
 
         try {
-            await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?;', [relations]);
+            await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId, albumId) VALUES ?;', [relations]);
         } catch (err) {
             console.log(err);
         }
     }
 
-    static async createPhotoNumbersRelations(photo: string, numbers: string[]): Promise<(string | number)[][]> {
+    static async createPhotoNumbersRelations(
+        albumId: number,
+        photo: string,
+        numbers: string[]
+    ): Promise<(string | number)[][]> {
         return await Promise.all(
             numbers.map(async (number) => {
-                return [photo, await PhoneNumber.getId(number)];
+                return [photo, await PhoneNumber.getId(number), albumId];
             })
         );
     }

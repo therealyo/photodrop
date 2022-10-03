@@ -31,6 +31,8 @@ export class Client implements IClient {
         );
     }
 
+    async getClientAlbums() {}
+
     async updateOtp(): Promise<void> {
         await connection.query('UPDATE clients SET token=?, expires=? WHERE number=?', [
             [this.token],
@@ -70,4 +72,7 @@ export class Client implements IClient {
     static async setPersonalData(client: Client, name: string | undefined, email: string | undefined) {
         await connection.query('UPDATE clients SET name=?, email=? WHERE number=?', [[name], [email], [client.number]]);
     }
+
+    static async getAlbums(client: Client) {}
+    static async getAlbumData(client: Client, albumId: number) {}
 }

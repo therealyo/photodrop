@@ -10,9 +10,9 @@ const createAlbumHandler: ValidatedEventAPIGatewayProxyEvent<typeof createAlbumS
         const { name, location, date } = event.body;
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
 
-        const message = await albumService.createAlbum(user, name, location, date);
+        const data = await albumService.createAlbum(user, name, location, date);
 
-        return formatJSONResponse({ message });
+        return formatJSONResponse({ data });
     } catch (err) {
         handleError(err);
     }
