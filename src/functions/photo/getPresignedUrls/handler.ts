@@ -1,5 +1,4 @@
 import { middyfy } from '../../../libs/lambda';
-// import photoService from '../../../services/photo.service';
 import { getPresignedUrlSchema } from '../../../validation/photo.validation';
 import { handleError } from './../../../errors/errorHandler';
 import { ValidatedEventAPIGatewayProxyEvent, formatJSONResponse } from './../../../libs/api-gateway';
@@ -17,7 +16,7 @@ const presignedUrlHanlder: ValidatedEventAPIGatewayProxyEvent<typeof getPresigne
             `albums/${user.email}/${albumName}/${photoName}.${extension}`
         );
 
-        return formatJSONResponse({ data: { key: `${photoName}.${extension}`, ...uploadData } });
+        return formatJSONResponse({ data: { key: `${photoName}`, ...uploadData } });
     } catch (err) {
         handleError(err);
     }

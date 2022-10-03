@@ -31,7 +31,7 @@ class UserService {
             throw ApiError.WrongCredentials();
         }
 
-        const token = tokenService.generateToken(userData);
+        const token = await tokenService.generateToken(userData);
         return token;
     }
 

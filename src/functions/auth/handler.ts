@@ -12,13 +12,6 @@ export const auth = async (event: any) => {
         }
 
         const userData = await tokenService.validateToken(token);
-        // const userData = {
-        //     userId: 1,
-        //     email: 'test@gmail.com',
-        //     clientId: 1,
-        //     number: '+380111111111',
-        //     name: 'test'
-        // };
 
         return generatePolicy({ allow: true }, userData);
     } catch (err) {

@@ -3,8 +3,8 @@ import type { AWS } from '@serverless/typescript';
 import { auth } from './src/functions/auth';
 import { registration, login, getAlbums } from './src/functions/user';
 import { createAlbum, getAlbumData } from './src/functions/album';
-import { sendOtp, verifyOtp, setClientData, getClient } from './src/functions/client/';
-import { handleUpload, getPresignedUrl } from './src/functions/photo';
+import { sendOtp, verifyOtp, setClientData, getClient, setClientSelfie } from './src/functions/client/';
+import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo';
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
@@ -34,9 +34,11 @@ const serverlessConfiguration: AWS = {
         sendOtp,
         verifyOtp,
         setClientData,
+        setClientSelfie,
         getClient,
         handleUpload,
-        getPresignedUrl
+        getPresignedUrl,
+        addNumbers
     },
     custom: {
         esbuild: {

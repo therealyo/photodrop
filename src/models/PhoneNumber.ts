@@ -1,5 +1,5 @@
 import connection from '../connectors/sql.connector';
-import { Photo } from './Photo';
+import { User } from './User';
 
 export class PhoneNumber {
     countryCode: string;
@@ -13,37 +13,44 @@ export class PhoneNumber {
         this.userId = userId;
     }
 
-    static async getId(num: PhoneNumber): Promise<number | undefined> {
+    static async getId(number: string): Promise<number | undefined> {
         try {
-            const query = (await connection.query('SELECT numberId FROM numbers WHERE number=?', [
-                [num.countryCode + num.phoneNumber]
-            ])) as any;
+            const query = (await connection.query('SELECT numberId FROM numbers WHERE number=?', [[number]])) as any;
             return query[0][0].numberId;
         } catch (err) {
             return undefined;
         }
     }
 
-    static async save(phoneNumbers: PhoneNumber[]): Promise<void> {
-        await PhoneNumber.saveNumbers(phoneNumbers);
-        await PhoneNumber.saveUsersRelation(phoneNumbers);
+    static async save(user: User, numbers: string[]): Promise<void> {
+        await PhoneNumber.saveNumbers(numbers);
+        await PhoneNumber.saveUsersRelation(user, numbers);
     }
 
-    private static async saveNumbers(phoneNumbers: PhoneNumber[]): Promise<void> {
-        const numbers = phoneNumbers.map((num) => {
-            return [num.countryCode + num.phoneNumber];
-        });
-        await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?', [numbers]);
+    private static async saveNumbers(numbers: string[]): Promise<void> {
+        try {
+            console.log(numbers);
+            await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?;', [
+                numbers.map((number) => {
+                    return [number];
+                })
+            ]);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
-    private static async saveUsersRelation(phoneNumbers: PhoneNumber[]): Promise<void> {
+    private static async saveUsersRelation(user: User, numbers: string[]): Promise<void> {
         const userNumberRelation = await Promise.all(
-            phoneNumbers.map(async (num) => {
-                return [num.userId, await PhoneNumber.getId(num)];
+            numbers.map(async (num) => {
+                return [user.userId, await PhoneNumber.getId(num)];
             })
         );
-        await connection.query('INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?', [userNumberRelation]);
+        try {
+            console.log(numbers);
+            await connection.query('INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?;', [userNumberRelation]);
+        } catch (err) {
+            console.log(err);
+        }
     }
-
-    private static async savePhotosRelation(photos: Photo[]): Promise<void> {}
 }

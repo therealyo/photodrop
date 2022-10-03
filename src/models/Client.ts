@@ -23,6 +23,7 @@ export class Client implements IClient {
     async setFolder(): Promise<void> {
         this.selfieFolder = await Photo.generateName();
     }
+
     async save(): Promise<void> {
         await connection.query(
             'INSERT IGNORE INTO clients (number, name, email, selfieLink, selfieFolder, token, expires) VALUES (?)',

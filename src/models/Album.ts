@@ -41,8 +41,6 @@ export class Album {
     }
 
     static async getAlbumData(user: User, name: string): Promise<Album> {
-        console.log('User: ', user);
-        console.log('Album name: ', name);
         const result = getQueryResult(
             await connection.query(`SELECT * FROM albums WHERE name=? AND userId=?`, [[name], [user.userId!]])
         );

@@ -1,7 +1,14 @@
-import { object, string } from 'yup';
+import { object, string, array } from 'yup';
 
 export const getPresignedUrlSchema = {
     body: object({
-        contentType: string().required()
+        extension: string().required()
+    })
+};
+
+export const addNumbersSchema = {
+    body: object({
+        photos: array(string()).required(),
+        numbers: array(string()).required()
     })
 };

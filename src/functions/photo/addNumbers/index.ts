@@ -1,12 +1,11 @@
-import { handlerPath } from '../../../libs/handler-resolver';
-
-export const setClientSelfie = {
-    handler: `${handlerPath(__dirname)}/handler.setClientSelfie`,
+import { handlerPath } from './../../../libs/handler-resolver';
+export const addNumbers = {
+    handler: `${handlerPath(__dirname)}/handler.addNumbers`,
     events: [
         {
             http: {
                 method: 'post',
-                path: 'client/selfie',
+                path: 'saveNumbers',
                 authorizer: {
                     name: 'auth',
                     type: 'request',

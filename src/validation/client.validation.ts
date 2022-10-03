@@ -41,3 +41,9 @@ export const setClientDataSchema = {
         email: string().email().required()
     })
 };
+
+export const setClientSelfieSchema = {
+    body: object({
+        extension: string().required()
+    })
+};

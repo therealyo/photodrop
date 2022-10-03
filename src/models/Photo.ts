@@ -12,9 +12,8 @@ export class Photo {
     albumId?: number;
     userId?: number;
     numbers?: PhoneNumber[];
+    extension?: string;
     fileName: string;
-
-    // TODO: make watermarks true all the time
 
     constructor(fileName: string) {
         this.fileName = fileName;
@@ -22,15 +21,17 @@ export class Photo {
 
     async processFileName() {
         const split = this.fileName.split('/');
-        console.log('split: ', split);
+        console.log(split[3]);
         const userName = split[1].replace('%40', '@');
         const user = await User.getUserData(userName);
-        console.log(user);
         if (split[0] === 'albums') {
             this.userId = user.userId;
             this.albumId = await Album.getAlbumId(user, split[2]);
-            console.log(this.albumId);
-            this.name = split[3];
+            const [name, ext] = split[3].split('.');
+            console.log(name);
+            console.log(ext);
+            this.name = name;
+            this.extension = ext;
         } else if (split[0] === 'selfies') {
             this.userId = user.userId;
             this.name = split[2];
@@ -40,12 +41,13 @@ export class Photo {
     }
 
     async save() {
-        await connection.query('INSERT INTO photos (photoId, albumId) VALUES (?)', [[this.name, this.albumId]]);
+        await connection.query('INSERT INTO photos (photoId, albumId, extension) VALUES (?)', [
+            [this.name, this.albumId, this.extension]
+        ]);
     }
 
     async setName(): Promise<void> {
-        const name = await Photo.generateName();
-        this.name = name;
+        this.name = await Photo.generateName();
     }
 
     static async generateName(): Promise<string> {
@@ -54,39 +56,44 @@ export class Photo {
         return photoName;
     }
 
-    static async save(photos: Photo[]): Promise<void> {
-        await Photo.savePhotos(photos);
-        await Promise.all(
-            photos.map((photo) => {
-                photo.savePhotoNumbersRelation();
+    static async save(photos: string[], numbers: string[]): Promise<void> {
+        // await Photo.savePhotos(albumId, photos);
+        await Photo.savePhotoNumbersRelation(photos, numbers);
+    }
+
+    static async savePhotos(albumId: number, photos: string[]): Promise<void> {
+        const insertValues = photos.map((photo) => {
+            return [photo, albumId];
+        });
+        try {
+            await connection.query('INSERT INTO photos (photoId, albumId) VALUES ?;', [insertValues]);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async savePhotoNumbersRelation(photos: string[], numbers: string[]) {
+        const relations = (
+            await Promise.all(
+                photos.map(async (photo) => {
+                    return await Photo.createPhotoNumbersRelations(photo, numbers);
+                })
+            )
+        ).flat();
+        console.log(relations);
+
+        try {
+            await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?;', [relations]);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async createPhotoNumbersRelations(photo: string, numbers: string[]): Promise<(string | number)[][]> {
+        return await Promise.all(
+            numbers.map(async (number) => {
+                return [photo, await PhoneNumber.getId(number)];
             })
         );
-    }
-
-    static async savePhotos(photos: Photo[]): Promise<void> {
-        const insertValues = photos.map((photo) => {
-            return [photo.name, photo.albumId];
-        });
-        await connection.query('INSERT INTO photos (photoId, albumId, waterMark) VALUES ?', [insertValues]);
-    }
-
-    static async removeWatermark(photoName: string) {
-        await connection.query('UPDATE photos SET waterMark=? WHERE photoId=?', [[0], [photoName]]);
-    }
-
-    private async getPhotoNumbersRelations(): Promise<(string | number)[][]> {
-        const ids = [] as (number | undefined)[];
-        for (const number of this.numbers!) {
-            ids.push(await PhoneNumber.getId(number));
-        }
-
-        return ids.map((id) => {
-            return [this.name!, id!];
-        });
-    }
-
-    private async savePhotoNumbersRelation(): Promise<void> {
-        const photoToNumbersRelation = await this.getPhotoNumbersRelations();
-        await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?', [photoToNumbersRelation]);
     }
 }
