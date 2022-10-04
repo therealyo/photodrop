@@ -14,8 +14,6 @@ dist/
 
 test/
 
-index.js
-
 .parcel-cache/
 
 buckets/
