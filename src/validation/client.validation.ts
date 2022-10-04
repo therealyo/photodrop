@@ -46,4 +46,6 @@ export const setClientSelfieSchema = {
     body: object({
         extension: string().required()
     })
+        .default(undefined)
+        .required()
 };

@@ -59,7 +59,7 @@ class ClientService {
             number: phoneService.splitNumber(userData!.number),
             email: userData!.email,
             name: userData!.name,
-            selfie: `${process.env.BUCKET_PATH}${userData!.selfieFolder}/${userData!.selfieLink}.jpg`
+            selfie: `${process.env.BUCKET_PATH}${userData!.clientId}/${userData!.selfieLink}`
         };
     }
 

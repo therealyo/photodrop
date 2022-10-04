@@ -1,6 +1,7 @@
+import { Handler } from 'aws-lambda';
+
 import { formatJSONResponse } from './../../../libs/api-gateway';
 import { middyfy } from './../../../libs/lambda';
-import { Handler } from 'aws-lambda';
 import { handleError } from './../../../errors/errorHandler';
 import clientService from '../../../services/client.service';
 import { Client } from '../../../models/Client';

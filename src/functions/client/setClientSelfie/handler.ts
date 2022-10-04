@@ -13,7 +13,7 @@ const setClientSelfieHandler: ValidatedEventAPIGatewayProxyEvent<typeof setClien
         const photoName = await Photo.generateName();
 
         const uploadData = await presignedUrlService.getPresignedUrl(
-            `selfies/${user.selfieFolder}/${photoName}.${extension}`
+            `selfies/${user.clientId}/${photoName}.${extension}`
         );
         await Client.setSelfie(user, `${photoName}.${extension}`);
 
