@@ -1,4 +1,4 @@
 export interface PhotoId {
     photoId?: string;
-    waterMark?: boolean;
+    extension?: string;
 }

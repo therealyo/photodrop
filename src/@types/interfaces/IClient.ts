@@ -1,12 +1,10 @@
-import { Otp } from '../Otp';
-
 export interface IClient {
-    readonly clientId?: number;
-    readonly number: string;
-    readonly selfieLink?: string;
-    readonly selfieFolder?: string;
-    readonly name?: string;
-    readonly email?: string;
+    clientId?: string;
+    number: string;
+    selfieLink?: string;
+    selfieFolder?: string;
+    name?: string;
+    email?: string;
     token: string;
     expires: Date;
 }

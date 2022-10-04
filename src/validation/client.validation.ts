@@ -1,52 +1,51 @@
-import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
-import { validate } from '../middleware/validate.middleware';
+import { object, string } from 'yup';
 
-export const sendOtpValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        number: Joi.object({
-            countryCode: Joi.string().pattern(new RegExp('^\\+\\d{1,5}$')).required(),
-            number: Joi.string().pattern(new RegExp('^\\d{9,10}$'))
-        }).required(),
-        newNumber: Joi.object({
-            countryCode: Joi.string().pattern(new RegExp('^\\+\\d{1,5}$')).required(),
-            number: Joi.string().pattern(new RegExp('^\\d{9,10}$'))
+export const sendOtpSchema = {
+    body: object({
+        number: object({
+            countryCode: string().matches(new RegExp('^\\+\\d{1,5}$')).required(),
+            number: string().matches(new RegExp('^\\d{9,10}$')).required()
         })
-    });
-    try {
-        validate(req, next, schema, 'body');
-    } catch (err) {
-        next(err);
-    }
+            .default(undefined)
+            .required(),
+        newNumber: object({
+            countryCode: string().matches(new RegExp('^\\+\\d{1,5}$')).required(),
+            number: string().matches(new RegExp('^\\d{9,10}$')).required()
+        })
+            .default(undefined)
+            .notRequired()
+    })
 };
 
-export const verifyOtpValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        number: Joi.object({
-            countryCode: Joi.string().pattern(new RegExp('^\\+\\d{1,5}$')).required(),
-            number: Joi.string().pattern(new RegExp('^\\d{9,10}$'))
-        }).required(),
-        newNumber: Joi.object({
-            countryCode: Joi.string().pattern(new RegExp('^\\+\\d{1,5}$')).required(),
-            number: Joi.string().pattern(new RegExp('^\\d{9,10}$'))
-        }),
-        code: Joi.string().length(6).required()
-    });
-    try {
-        validate(req, next, schema, 'body');
-    } catch (err) {
-        next(err);
-    }
+export const verifyOtpSchema = {
+    body: object({
+        number: object({
+            countryCode: string().matches(new RegExp('^\\+\\d{1,5}$')).required(),
+            number: string().matches(new RegExp('^\\d{9,10}$')).required()
+        })
+            .default(undefined)
+            .required(),
+        newNumber: object({
+            countryCode: string().matches(new RegExp('^\\+\\d{1,5}$')).required(),
+            number: string().matches(new RegExp('^\\d{9,10}$')).required()
+        })
+            .default(undefined)
+            .notRequired(),
+        code: string().length(6).required()
+    })
 };
 
-export const personalDataValidation = (req: Request, res: Response, next: NextFunction) => {
-    const schema = Joi.object({
-        name: Joi.string(),
-        email: Joi.string().email()
-    });
-    try {
-        validate(req, next, schema, 'body');
-    } catch (err) {
-        next(err);
-    }
+export const setClientDataSchema = {
+    body: object({
+        name: string().required(),
+        email: string().email().required()
+    })
+};
+
+export const setClientSelfieSchema = {
+    body: object({
+        extension: string().required()
+    })
+        .default(undefined)
+        .required()
 };

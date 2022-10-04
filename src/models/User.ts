@@ -1,39 +1,39 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { PhoneNumber } from './PhoneNumber';
-import { IUser } from '../@types/interfaces/IUser';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
-import { getQueryResult } from '../service/query.service';
+import { getQueryResult } from '../services/query.service';
+import { IUser } from '../@types/interfaces/IUser';
 
 export class User implements IUser {
     login: string;
     password: string;
-    userId?: number;
+    userId?: string;
     email?: string;
     fullName?: string;
 
-    constructor(login: string, password: string, email?: string, fullName?: string, id?: number) {
+    constructor(login: string, password: string, email?: string, fullName?: string) {
         this.login = login;
         this.password = password;
         this.email = email ? email : 'undefined';
         this.fullName = fullName ? fullName : 'undefined';
-        if (id) {
-            this.userId = id;
-        }
+        this.userId = uuidv4();
     }
 
     async save(): Promise<string> {
         await connection.query('INSERT INTO users (login, password, email, fullName) VALUES (?) ;', [
             [this.login, this.password, this.email, this.fullName]
         ]);
-        return `User ${this.login} saved`;
+        return `User ${this.email} saved`;
     }
 
     static async getUserData(id: number): Promise<User>;
-    static async getUserData(login: string): Promise<User>;
+    static async getUserData(email: string): Promise<User>;
     static async getUserData(arg: string | number): Promise<User> {
-        const param = typeof arg === 'string' ? 'login' : 'userId';
+        const param = typeof arg === 'string' ? 'email' : 'userId';
         const result = getQueryResult(
-            await connection.query(`SELECT userId, login, password FROM users WHERE ${param}=?`, [arg])
+            await connection.query(`SELECT userId, login, password, email, fullName FROM users WHERE ${param}=?`, [arg])
         );
         return result[0];
     }
@@ -56,24 +56,27 @@ export class User implements IUser {
 
     static async getUserAlbums(user: User): Promise<Album[]> {
         const result = getQueryResult(
-            await connection.query('SELECT name, location, date FROM albums WHERE userId=?', [[user.userId!]])
+            await connection.query('SELECT albumId, name, location, date FROM albums WHERE userId=?', [[user.userId!]])
         );
         return result;
     }
 
-    static async countUserPhotos(user: User): Promise<number> {
-        const userAlbums = await User.getUserAlbums(user);
-        const photoAmounts = await Promise.all(
-            userAlbums.map(async (album) => {
-                const amount = await Album.countPhotos(album);
-                return amount;
-            })
-        );
-        return photoAmounts.reduce((prev, next) => prev + next, 0);
-    }
+    // static async countUserPhotos(user: User): Promise<number> {
+    //     const userAlbums = await User.getUserAlbums(user);
+    //     const photoAmounts = await Promise.all(
+    //         userAlbums.map(async (album) => {
+    //             const amount = await Album.countPhotos(album);
+    //             return amount;
+    //         })
+    //     );
+    //     return photoAmounts.reduce((prev, next) => prev + next, 0);
+    // }
 
-    static async photosUntilWaterMark(user: User): Promise<number> {
-        const photoAmount = await User.countUserPhotos(user);
-        return photoAmount - 3;
-    }
+    // static async photosUntilWaterMark(user: User): Promise<number> {
+    //     const photoAmount = await User.countUserPhotos(user);
+    //     return photoAmount - 3;
+    // }
+
+    // Возвращать данные созданного альбома
+    // При запросе на альюом возвращать его айди
 }

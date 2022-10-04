@@ -1,29 +1,51 @@
-import { IPhoto } from '../@types/interfaces/IPhoto';
-import crypto from 'crypto';
+import { ApiError } from './../errors/api.error';
+import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
-import { PhotoId } from '../@types/PhotoId';
+import { User } from './User';
+import { Client } from './Client';
 
 const randomBytes = promisify(crypto.randomBytes);
-export class Photo implements IPhoto {
-    name?: string;
-    albumId?: number;
-    userId?: number;
+export class Photo {
+    photoId?: string;
+    albumId?: string;
+    userId?: string;
     numbers?: PhoneNumber[];
-    waterMark: boolean;
+    extension?: string;
+    fileName: string;
 
-    // TODO: make watermarks true all the time
+    constructor(fileName: string) {
+        this.fileName = fileName;
+    }
 
-    constructor(albumId: number, waterMarkStatus: boolean, numbers?: PhoneNumber[]) {
-        this.albumId = albumId;
-        this.numbers = numbers ? numbers : [];
-        this.waterMark = waterMarkStatus;
+    async processFileName() {
+        const split = this.fileName.split('/');
+        const userName = split[1].replace('%40', '@');
+        const user = await User.getUserData(userName);
+
+        if (split[0] === 'albums') {
+            this.userId = user.userId;
+            this.albumId = split[2];
+            const [name, ext] = split[3].split('.');
+            this.photoId = name;
+            this.extension = ext;
+        } else if (split[0] === 'selfies') {
+            this.userId = user.userId;
+            this.photoId = split[2];
+        } else {
+            throw new ApiError(500, 'Something wrong with photo loading');
+        }
+    }
+
+    async save() {
+        await connection.query('INSERT INTO photos (photoId, albumId, extension) VALUES (?)', [
+            [this.photoId, this.albumId, this.extension]
+        ]);
     }
 
     async setName(): Promise<void> {
-        const name = await Photo.generateName();
-        this.name = name;
+        this.photoId = await Photo.generateName();
     }
 
     static async generateName(): Promise<string> {
@@ -32,39 +54,28 @@ export class Photo implements IPhoto {
         return photoName;
     }
 
-    static async save(photos: Photo[]): Promise<void> {
-        await Photo.savePhotos(photos);
-        await Promise.all(
-            photos.map((photo) => {
-                photo.savePhotoNumbersRelation();
+    // static async save(albumId: string, photos: string[], numbers: string[]): Promise<void> {
+    //     await Photo.savePhotoNumbersRelation(albumId, photos, numbers);
+    // }
+
+    static async savePhotoNumbersRelation(albumId: string, photos: string[], clients: Client[]): Promise<void> {
+        const relations = photos
+            .map((photo) => {
+                return Photo.createPhotoNumbersRelations(albumId, photo, clients);
             })
-        );
-    }
+            .flat();
 
-    static async savePhotos(photos: Photo[]): Promise<void> {
-        const insertValues = photos.map((photo) => {
-            return [photo.name, photo.albumId, photo.waterMark];
-        });
-        await connection.query('INSERT INTO photos (photoId, albumId, waterMark) VALUES ?', [insertValues]);
-    }
-
-    static async removeWatermark(photoName: string) {
-        await connection.query('UPDATE photos SET waterMark=? WHERE photoId=?', [[0], [photoName]]);
-    }
-
-    private async getPhotoNumbersRelations(): Promise<(string | number)[][]> {
-        const ids = [] as (number | undefined)[];
-        for (const number of this.numbers!) {
-            ids.push(await PhoneNumber.getId(number));
+        try {
+            await connection.query('INSERT INTO numbersOnPhotos (photoId, clientId, albumId) VALUES ?;', [relations]);
+        } catch (err) {
+            // console.log(err);
+            throw err;
         }
-
-        return ids.map((id) => {
-            return [this.name!, id!];
-        });
     }
 
-    private async savePhotoNumbersRelation(): Promise<void> {
-        const photoToNumbersRelation = await this.getPhotoNumbersRelations();
-        await connection.query('INSERT INTO numbersOnPhotos (photoId, numberId) VALUES ?', [photoToNumbersRelation]);
+    static createPhotoNumbersRelations(albumId: string, photo: string, clients: Client[]) {
+        return clients.map((client) => {
+            return [photo, client.clientId, albumId];
+        });
     }
 }

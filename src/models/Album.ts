@@ -1,56 +1,56 @@
+import { v4 as uuidv4 } from 'uuid';
 import connection from '../connectors/sql.connector';
-import { IAlbum } from '../@types/interfaces/IAlbum';
 import { User } from './User';
 import { ApiError } from '../errors/api.error';
 import { PhotoId } from '../@types/PhotoId';
-import { getQueryResult } from '../service/query.service';
+import { getQueryResult } from '../services/query.service';
 
-export class Album implements IAlbum {
-    albumId?: number;
+export class Album {
+    albumId?: string;
     name: string;
-    userId: number;
+    userId: string;
     location: string;
     date: string | Date;
     path: string;
     photos?: { url: string; watermark: boolean }[];
 
     constructor(name: string, user: User, location: string, date: string | undefined) {
+        this.albumId = uuidv4();
         this.name = name;
         this.userId = user.userId!;
         this.location = location;
-        this.date = date ? date : new Date();
-        this.path = `albums/${user.login}/${name}/`;
+        this.date = new Date(date).toString() !== 'Invalid Date' ? new Date(date) : new Date();
+        this.path = `albums/${user.email}/${this.albumId}/`;
     }
 
-    async save(): Promise<void> {
+    async save(): Promise<Album> {
         try {
-            await connection.query('INSERT INTO albums (name, userId, location, date, path) VALUES (?);', [
-                [this.name, this.userId, this.location, this.date, this.path]
+            await connection.query('INSERT INTO albums (albumId, name, userId, location, date, path) VALUES (?);', [
+                [this.albumId, this.name, this.userId, this.location, this.date, this.path]
             ]);
+            return this;
         } catch (err) {
-            throw new ApiError(400, `Album ${this.name} already exists`);
+            throw new ApiError(500, `Album ${this.albumId} already exists`);
         }
     }
 
-    static async getAlbumId(name: string, userId: number): Promise<number> {
-        try {
-            const albumData = await this.getAlbumData(name, userId);
-            return albumData.albumId!;
-        } catch (err) {
-            throw new ApiError(404, `Album ${name} does not exist`);
-        }
-    }
+    // static async getAlbumId(user: User, name: string): Promise<string> {
+    //     try {
+    //         const albumData = await Album.getAlbumData(user, name);
+    //         return albumData.albumId!;
+    //     } catch (err) {
+    //         throw new ApiError(404, `Album ${name} does not exist`);
+    //     }
+    // }
 
-    static async getAlbumData(name: string, userId: number): Promise<Album> {
-        const result = getQueryResult(
-            await connection.query(`SELECT * FROM albums WHERE name=? and userId=?`, [[name], [userId]])
-        );
+    static async getAlbumData(albumId: string): Promise<Album> {
+        const result = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]));
         return result[0];
     }
 
-    static async getAlbumPhotos(albumId: number): Promise<PhotoId[]> {
+    static async getAlbumPhotos(albumId: string): Promise<PhotoId[]> {
         const result = getQueryResult(
-            await connection.query('SELECT photoId, waterMark FROM photos WHERE albumId=?', [[albumId]])
+            await connection.query('SELECT photoId, extension FROM photos WHERE albumId=?', [[albumId]])
         );
         return result;
     }
