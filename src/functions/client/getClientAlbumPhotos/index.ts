@@ -1,12 +1,12 @@
 import { handlerPath } from './../../../libs/handler-resolver';
 
-export const getPresignedUrl = {
-    handler: `${handlerPath(__dirname)}/handler.getPresignedUrl`,
+export const getClientAlbumPhoto = {
+    handler: `${handlerPath(__dirname)}/handler.getAlbumPhotos`,
     events: [
         {
             http: {
-                method: 'post',
-                path: 'upload/{albumId}',
+                method: 'get',
+                path: 'client/albums/{albumId}',
                 authorizer: {
                     name: 'auth',
                     type: 'request',

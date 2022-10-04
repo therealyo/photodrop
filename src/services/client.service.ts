@@ -1,26 +1,32 @@
-import { ApiError } from './../errors/api.error';
-import { Client } from '../models/Client';
 import otpService from './otp.service';
 import tokenService from './token.service';
 import phoneService from './phoneNumber.service';
 import presignedUrlService from './presignedUrl.service';
+import { ApiError } from './../errors/api.error';
+import { Client } from '../models/Client';
 import { Photo } from '../models/Photo';
 import { PresignedUrl } from '../@types/PresignedUrl';
 import { ClientData } from '../@types/ClientData';
+import { Album } from '../models/Album';
 
 class ClientService {
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.sendOtp(number);
-        const client = new Client(number, otp);
+        // const clientData = await Client.getClientData(number)
 
-        if (await Client.getData(number)) {
-            await client.updateOtp();
-            if (newNumber) await client.setNewNumber(newNumber);
+        // if (clientData) {
+        const client = await Client.getData(number);
+
+        if (client) {
+            await Client.updateOtp(client, otp);
+            if (newNumber) await Client.setNewNumber(client, newNumber);
         } else {
             if (newNumber) throw ApiError.BadRequest('User does not exist');
             else {
-                await client.setFolder();
-                await client.save();
+                const newClient = new Client(number);
+                await newClient.setFolder();
+                await newClient.save();
+                await Client.updateOtp(newClient, otp);
             }
         }
 
@@ -59,7 +65,7 @@ class ClientService {
 
     async setSelfie(client: Client): Promise<PresignedUrl> {
         const selfieName = await Photo.generateName();
-        const link = await presignedUrlService.getPresignedUrl(`selfies/${client.number}/${selfieName}`);
+        const link = await presignedUrlService.getPresignedUrl(`selfies/${client.clientId}/${selfieName}`);
         // await Client.setSelfie(client, selfieName);
         return link;
     }
@@ -70,7 +76,21 @@ class ClientService {
     }
 
     async getClientAlbums(client: Client) {
-        return await Client.getAlbums(client);
+        const purchasedAlbums = await Client.getPurchasedAlbums(client);
+        console.log(purchasedAlbums);
+
+        return await Promise.all(
+            (
+                await Client.getAlbums(client)
+            ).map(async (albumId) => {
+                const purchased = purchasedAlbums.includes(albumId);
+                return { purchased, ...(await Album.getAlbumData(albumId)) };
+            })
+        );
+    }
+
+    async getClientAlbumData(client: Client, albumId: string) {
+        return await Client.getClientAlbumPhotos(client, albumId);
     }
     /* TODO: make implementation for client/getAllAlbums 
        TODO: make implementation for client/getAlbum */

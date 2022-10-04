@@ -3,14 +3,14 @@ import * as crypto from 'crypto';
 import { promisify } from 'util';
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
-import { Album } from './Album';
 import { User } from './User';
+import { Client } from './Client';
 
 const randomBytes = promisify(crypto.randomBytes);
 export class Photo {
-    name?: string;
-    albumId?: number;
-    userId?: number;
+    photoId?: string;
+    albumId?: string;
+    userId?: string;
     numbers?: PhoneNumber[];
     extension?: string;
     fileName: string;
@@ -21,20 +21,18 @@ export class Photo {
 
     async processFileName() {
         const split = this.fileName.split('/');
-        console.log(split[3]);
         const userName = split[1].replace('%40', '@');
         const user = await User.getUserData(userName);
+
         if (split[0] === 'albums') {
             this.userId = user.userId;
-            this.albumId = await Album.getAlbumId(user, split[2]);
+            this.albumId = split[2];
             const [name, ext] = split[3].split('.');
-            console.log(name);
-            console.log(ext);
-            this.name = name;
+            this.photoId = name;
             this.extension = ext;
         } else if (split[0] === 'selfies') {
             this.userId = user.userId;
-            this.name = split[2];
+            this.photoId = split[2];
         } else {
             throw new ApiError(500, 'Something wrong with photo loading');
         }
@@ -42,12 +40,12 @@ export class Photo {
 
     async save() {
         await connection.query('INSERT INTO photos (photoId, albumId, extension) VALUES (?)', [
-            [this.name, this.albumId, this.extension]
+            [this.photoId, this.albumId, this.extension]
         ]);
     }
 
     async setName(): Promise<void> {
-        this.name = await Photo.generateName();
+        this.photoId = await Photo.generateName();
     }
 
     static async generateName(): Promise<string> {
@@ -56,27 +54,28 @@ export class Photo {
         return photoName;
     }
 
-    static async save(albumId: number, photos: string[], numbers: string[]): Promise<void> {
-        await Photo.savePhotoNumbersRelation(albumId, photos, numbers);
-    }
+    // static async save(albumId: string, photos: string[], numbers: string[]): Promise<void> {
+    //     await Photo.savePhotoNumbersRelation(albumId, photos, numbers);
+    // }
 
-    static async savePhotoNumbersRelation(albumId: number, photos: string[], numbers: string[]) {
+    static async savePhotoNumbersRelation(albumId: string, photos: string[], clients: Client[]): Promise<void> {
         const relations = photos
             .map((photo) => {
-                return Photo.createPhotoNumbersRelations(albumId, photo, numbers);
+                return Photo.createPhotoNumbersRelations(albumId, photo, clients);
             })
             .flat();
 
         try {
-            await connection.query('INSERT INTO numbersOnPhotos (photoId, number, albumId) VALUES ?;', [relations]);
+            await connection.query('INSERT INTO numbersOnPhotos (photoId, clientId, albumId) VALUES ?;', [relations]);
         } catch (err) {
-            console.log(err);
+            // console.log(err);
+            throw err;
         }
     }
 
-    static createPhotoNumbersRelations(albumId: number, photo: string, numbers: string[]) {
-        return numbers.map((number) => {
-            return [photo, number, albumId];
+    static createPhotoNumbersRelations(albumId: string, photo: string, clients: Client[]) {
+        return clients.map((client) => {
+            return [photo, client.clientId, albumId];
         });
     }
 }

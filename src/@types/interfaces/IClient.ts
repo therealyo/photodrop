@@ -1,5 +1,5 @@
 export interface IClient {
-    clientId?: number;
+    clientId?: string;
     number: string;
     selfieLink?: string;
     selfieFolder?: string;

@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
@@ -7,18 +9,16 @@ import { IUser } from '../@types/interfaces/IUser';
 export class User implements IUser {
     login: string;
     password: string;
-    userId?: number;
+    userId?: string;
     email?: string;
     fullName?: string;
 
-    constructor(login: string, password: string, email?: string, fullName?: string, id?: number) {
+    constructor(login: string, password: string, email?: string, fullName?: string) {
         this.login = login;
         this.password = password;
         this.email = email ? email : 'undefined';
         this.fullName = fullName ? fullName : 'undefined';
-        if (id) {
-            this.userId = id;
-        }
+        this.userId = uuidv4();
     }
 
     async save(): Promise<string> {

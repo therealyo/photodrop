@@ -20,7 +20,7 @@ class PresignedUrlService {
                 fields: {}
             };
         } catch (err) {
-            console.log(err);
+            throw err;
         }
     }
 }

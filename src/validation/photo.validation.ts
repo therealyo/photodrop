@@ -10,6 +10,6 @@ export const addNumbersSchema = {
     body: object({
         photos: array(string()).required(),
         numbers: array(string()).required(),
-        albumName: string().required()
+        albumId: string().required()
     })
 };

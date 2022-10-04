@@ -7,10 +7,10 @@ import albumService from '../../../services/album.service';
 
 const getAlbumDataHandler: Handler = async (event: any) => {
     try {
-        const { albumName } = event.pathParameters;
+        const { albumId } = event.pathParameters;
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
 
-        const albumData = await albumService.getAlbum(user, albumName);
+        const albumData = await albumService.getAlbum(user, albumId);
         return formatJSONResponse({ data: albumData });
     } catch (err) {
         handleError(err);

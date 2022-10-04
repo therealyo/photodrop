@@ -1,4 +1,5 @@
 import connection from '../connectors/sql.connector';
+import { Client } from './Client';
 import { User } from './User';
 
 export class PhoneNumber {
@@ -22,34 +23,32 @@ export class PhoneNumber {
         }
     }
 
-    static async save(user: User, numbers: string[]): Promise<void> {
-        await PhoneNumber.saveNumbers(numbers);
-        await PhoneNumber.saveUsersRelation(user, numbers);
+    static async save(user: User, clients: Client[]): Promise<void> {
+        await PhoneNumber.saveNumbers(clients);
+        await PhoneNumber.saveUsersRelation(user, clients);
     }
 
-    private static async saveNumbers(numbers: string[]): Promise<void> {
+    private static async saveNumbers(clients: Client[]): Promise<void> {
         try {
-            await connection.query('INSERT IGNORE INTO numbers (number) VALUES ?;', [
-                numbers.map((number) => {
-                    return [number];
+            await connection.query('INSERT IGNORE INTO clients (clientId, number) VALUES ?;', [
+                clients.map((client) => {
+                    return [client.clientId, client.number];
                 })
             ]);
         } catch (err) {
-            console.log(err);
+            throw err;
         }
     }
 
-    private static async saveUsersRelation(user: User, numbers: string[]): Promise<void> {
-        const userNumberRelation = await Promise.all(
-            numbers.map(async (num) => {
-                return [user.userId, await PhoneNumber.getId(num)];
-            })
-        );
+    private static async saveUsersRelation(user: User, clients: Client[]): Promise<void> {
+        const userNumberRelation = clients.map((client) => {
+            return [user.userId, client.clientId];
+        });
         try {
-            console.log(numbers);
-            await connection.query('INSERT IGNORE INTO usersPhones (userId, numberId) VALUES ?;', [userNumberRelation]);
+            // console.log('Relation: ', userNumberRelation);
+            await connection.query('INSERT IGNORE INTO usersPhones (userId, clientId) VALUES ?;', [userNumberRelation]);
         } catch (err) {
-            console.log(err);
+            throw err;
         }
     }
 }

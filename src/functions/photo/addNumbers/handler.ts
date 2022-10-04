@@ -7,10 +7,10 @@ import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from './../../
 
 const addNumbersToPhotosHanlder: ValidatedEventAPIGatewayProxyEvent<typeof addNumbersSchema> = async (event: any) => {
     try {
-        const { numbers, photos, albumName } = event.body;
+        const { numbers, photos, albumId } = event.body;
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
 
-        await photoService.saveNumbers(user, albumName, numbers, photos);
+        await photoService.saveNumbers(user, albumId, numbers, photos);
 
         return formatJSONResponse({ message: 'success' });
     } catch (err) {

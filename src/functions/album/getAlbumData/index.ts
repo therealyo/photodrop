@@ -5,7 +5,7 @@ export const getAlbumData = {
         {
             http: {
                 method: 'get',
-                path: 'albums/{albumName}',
+                path: 'albums/{albumId}',
                 authorizer: {
                     name: 'auth',
                     type: 'request',
