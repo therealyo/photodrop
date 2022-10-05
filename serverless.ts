@@ -10,14 +10,15 @@ import {
     getClient,
     setClientSelfie,
     getClientAlbums,
-    getClientAlbumPhoto
+    getClientAlbumPhoto,
+    purchaseAlbum
 } from './src/functions/client/';
 import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo';
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
     frameworkVersion: '3',
-    plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv-plugin', 'serverless-s3-local'],
+    plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv-plugin'],
     provider: {
         name: 'aws',
         region: 'eu-west-2',
@@ -46,6 +47,7 @@ const serverlessConfiguration: AWS = {
         getClient,
         getClientAlbums,
         getClientAlbumPhoto,
+        purchaseAlbum,
         handleUpload,
         getPresignedUrl,
         addNumbers

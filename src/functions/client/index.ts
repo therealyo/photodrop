@@ -5,3 +5,4 @@ export * from './getClientData';
 export * from './setClientSelfie';
 export * from './getAlbums';
 export * from './getClientAlbumPhotos';
+export * from './purchaseAlbum';
