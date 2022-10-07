@@ -17,6 +17,9 @@ export const validate = (schema: { body?: BaseSchema; queryStringParameters?: Ba
         } catch (e) {
             return {
                 statusCode: 422,
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
                 body: JSON.stringify({
                     errors: e.errors
                 })

@@ -17,9 +17,10 @@ const setClientSelfieHandler: ValidatedEventAPIGatewayProxyEvent<typeof setClien
         );
         await Client.setSelfie(user, `${photoName}.${extension}`);
 
-        return formatJSONResponse({ data: uploadData });
+        return formatJSONResponse(200, { data: uploadData });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

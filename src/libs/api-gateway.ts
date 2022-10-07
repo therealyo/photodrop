@@ -4,9 +4,9 @@ import type { FromSchema } from 'json-schema-to-ts';
 type ValidatedAPIGatewayProxyEvent<S> = Omit<APIGatewayProxyEvent, 'body'> & { body: FromSchema<S> };
 export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<ValidatedAPIGatewayProxyEvent<S>, APIGatewayProxyResult>;
 
-export const formatJSONResponse = (response: Record<string, unknown>): APIGatewayProxyResult => {
+export const formatJSONResponse = (statusCode: number, response: Record<string, unknown>): APIGatewayProxyResult => {
     return {
-        statusCode: 200,
+        statusCode,
         headers: {
             'Access-Control-Allow-Origin': '*'
         },

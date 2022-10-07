@@ -1,4 +1,4 @@
-import { ApiError } from './../../errors/api.error';
+// import { ApiError } from './../../errors/api.error';
 import tokenService from '../../services/token.service';
 import { IUser } from '../../@types/interfaces/IUser';
 import { IClient } from '../../@types/interfaces/IClient';
@@ -15,11 +15,7 @@ export const auth = async (event: any) => {
 
         return generatePolicy({ allow: true }, userData);
     } catch (err) {
-        if (err instanceof ApiError) {
-            throw err;
-        } else {
-            throw new ApiError(500, err.message);
-        }
+        return generatePolicy({ allow: false });
     }
 };
 

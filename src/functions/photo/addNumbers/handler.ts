@@ -12,9 +12,10 @@ const addNumbersToPhotosHanlder: ValidatedEventAPIGatewayProxyEvent<typeof addNu
 
         await photoService.saveNumbers(user, albumId, numbers, photos);
 
-        return formatJSONResponse({ message: 'success' });
+        return formatJSONResponse(200, { message: 'success' });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

@@ -8,9 +8,10 @@ const registrationHandler: ValidatedEventAPIGatewayProxyEvent<typeof registratio
     try {
         const { username, password, email, fullName } = event.body;
         const message = await userService.registration(username, password, email, fullName);
-        return formatJSONResponse({ message });
+        return formatJSONResponse(200, { message });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

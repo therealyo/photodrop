@@ -9,9 +9,10 @@ const getAlbumsHandler: Handler = async (event) => {
     try {
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
         const albums = await userService.getAlbums(user);
-        return formatJSONResponse({ data: albums });
+        return formatJSONResponse(200, { data: albums });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

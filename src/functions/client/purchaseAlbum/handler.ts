@@ -1,13 +1,10 @@
-// import { formatJSONResponse } from './../../../libs/api-gateway';
-// import Stripe from 'stripe';
 import { handleError } from './../../../errors/errorHandler';
-import { middyfy } from '../../../libs/lambda';
 import { stripe } from '../../../connectors/stripe';
 import { Client } from '../../../models/Client';
-// import albumService from '../../../services/album.service';
 import clientService from '../../../services/client.service';
+import { formatJSONResponse } from '../../../libs/api-gateway';
 
-export const purchaseAlbum = async (event, context, callback) => {
+export const purchaseAlbum = async (event) => {
     try {
         const { albumId } = event.pathParameters;
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
@@ -31,25 +28,14 @@ export const purchaseAlbum = async (event, context, callback) => {
             ],
             mode: 'payment',
             success_url: `https://example.com?success=true`,
-            cancel_url: `https://example.com/?canceled=true`
+            cancel_url: `https://example.com?canceled=true`
         });
-        console.log(session);
-        const response = {
-            statusCode: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-                // Location: session.url
-            },
-            body: JSON.stringify({ url: session.url })
-        };
-        // console.log(response);
-        return response;
+
+        return formatJSONResponse(200, { url: session.url });
         // console.log(customer.id);
     } catch (err) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: err.message })
-        };
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

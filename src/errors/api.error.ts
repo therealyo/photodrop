@@ -2,14 +2,15 @@ export class ApiError extends Error {
     statusCode: number;
     body;
 
-    constructor(statusCode: number, message: string, errors: string[] = []) {
+    constructor(statusCode: number, message: string, errors?: any) {
         super(message);
         this.statusCode = statusCode;
-        this.body = JSON.stringify({
+        this.body = {
             message,
             errors
-        });
+        };
     }
+
     static WrongCredentials(): ApiError {
         return new ApiError(401, 'Wrong login or password');
     }

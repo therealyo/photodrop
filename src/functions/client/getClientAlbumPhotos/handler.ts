@@ -12,9 +12,10 @@ const getClientAlbumPhotosHandler: Handler = async (event: any) => {
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
 
         const photos = await clientService.getClientAlbumData(user, albumId);
-        return formatJSONResponse({ data: photos });
+        return formatJSONResponse(200, { data: photos });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

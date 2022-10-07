@@ -11,9 +11,10 @@ const getClientHandler: Handler = async (event: any) => {
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
         const userData = await clientService.getClient(user);
 
-        return formatJSONResponse({ data: userData });
+        return formatJSONResponse(200, { data: userData });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

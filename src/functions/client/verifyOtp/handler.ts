@@ -14,9 +14,10 @@ const verifyOtpHandler: ValidatedEventAPIGatewayProxyEvent<typeof verifyOtpSchem
             phoneService.concatNumber(newNumber)
         );
 
-        return formatJSONResponse({ token });
+        return formatJSONResponse(200, { token });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

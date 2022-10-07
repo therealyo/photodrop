@@ -2,8 +2,8 @@ import { ApiError } from './api.error';
 
 export const handleError = (err) => {
     if (err instanceof ApiError) {
-        throw err;
+        return err;
     } else {
-        throw new ApiError(500, err.message);
+        return new ApiError(500, err.message, err);
     }
 };

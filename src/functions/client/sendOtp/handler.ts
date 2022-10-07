@@ -13,9 +13,10 @@ const sendOtpHandler: ValidatedEventAPIGatewayProxyEvent<typeof sendOtpSchema> =
             phoneService.concatNumber(newNumber)
         );
 
-        return formatJSONResponse({ message: result });
+        return formatJSONResponse(200, { message: result });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

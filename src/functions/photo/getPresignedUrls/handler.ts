@@ -18,9 +18,10 @@ const presignedUrlHanlder: ValidatedEventAPIGatewayProxyEvent<typeof getPresigne
             `albums/${user.email}/${albumId}/${photoName}.${extension}`
         );
 
-        return formatJSONResponse({ data: { key: `${photoName}`, ...uploadData } });
+        return formatJSONResponse(200, { data: { key: `${photoName}`, ...uploadData } });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

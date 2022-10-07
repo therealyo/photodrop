@@ -6,9 +6,10 @@ import { middyfy } from '../../../libs/lambda';
 const searchClientHandler: Handler = async (event) => {
     try {
         const body = event.body;
-        return formatJSONResponse({ body });
+        return formatJSONResponse(200, { body });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 

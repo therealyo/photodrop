@@ -9,9 +9,10 @@ const loginHandler: ValidatedEventAPIGatewayProxyEvent<typeof loginSchema> = asy
     try {
         const { email, password } = event.body;
         const token = await userService.login(email, password);
-        return formatJSONResponse({ token });
+        return formatJSONResponse(200, { token });
     } catch (err) {
-        handleError(err);
+        const e = handleError(err);
+        return formatJSONResponse(e.statusCode, e.body);
     }
 };
 
