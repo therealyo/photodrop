@@ -21,7 +21,7 @@ export const validate = (schema: { body?: BaseSchema; queryStringParameters?: Ba
                     'Access-Control-Allow-Origin': '*'
                 },
                 body: JSON.stringify({
-                    errors: e.errors
+                    message: e.errors.join('\n')
                 })
             };
         }
