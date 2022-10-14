@@ -24,13 +24,13 @@ class ClientService {
             if (newNumber) throw ApiError.BadRequest('User does not exist');
             else {
                 const newClient = new Client(number);
-                await newClient.setFolder();
+                // await newClient.setFolder();
                 await newClient.save();
                 await Client.updateOtp(newClient, otp);
             }
         }
 
-        return 'Verification code sent';
+        return client.number;
     }
 
     async verifyClient(number: string, code: string, newNumber?: string): Promise<string | undefined> {
@@ -59,7 +59,7 @@ class ClientService {
             number: phoneService.splitNumber(userData!.number),
             email: userData!.email,
             name: userData!.name,
-            selfie: `${process.env.BUCKET_PATH}${userData!.clientId}/${userData!.selfieLink}`
+            selfie: `${process.env.BUCKET_PATH}/selfies/${userData!.clientId}/${userData!.selfieLink}`
         };
     }
 

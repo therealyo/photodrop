@@ -12,7 +12,6 @@ export class Client implements IClient {
     clientId?: string;
     number: string;
     selfieLink?: string;
-    selfieFolder?: string;
     name?: string;
     email?: string;
     token: string;
@@ -25,9 +24,9 @@ export class Client implements IClient {
         // this.expires = otp.expires;
     }
 
-    async setFolder(): Promise<void> {
-        this.selfieFolder = await Photo.generateName();
-    }
+    // async setFolder(): Promise<void> {
+    //     this.selfieFolder = await Photo.generateName();
+    // }
 
     async save(): Promise<void> {
         await connection.query(
