@@ -1,6 +1,5 @@
 import otpService from './otp.service';
 import tokenService from './token.service';
-import phoneService from './phoneNumber.service';
 import presignedUrlService from './presignedUrl.service';
 import { ApiError } from './../errors/api.error';
 import { Client } from '../models/Client';
@@ -56,10 +55,10 @@ class ClientService {
     async getClient(client: Client): Promise<ClientData> {
         const userData = await Client.getData(client.number);
         return {
-            number: phoneService.splitNumber(userData!.number),
+            number: userData!.number,
             email: userData!.email,
             name: userData!.name,
-            selfie: `${process.env.BUCKET_PATH}/selfies/${userData!.clientId}/${userData!.selfieLink}`
+            selfie: `${process.env.BUCKET_PATH}selfies/${userData!.clientId}/${userData!.selfieLink}`
         };
     }
 

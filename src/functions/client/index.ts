@@ -6,3 +6,4 @@ export * from './setClientSelfie';
 export * from './getAlbums';
 export * from './getClientAlbumPhotos';
 export * from './purchaseAlbum';
+export * from "./handlePurchase"

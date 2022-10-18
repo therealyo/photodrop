@@ -1,7 +1,5 @@
-import { ParsedNumber } from './ParsedNumber';
-
 export interface ClientData {
-    number?: ParsedNumber;
+    number?: string;
     email?: string;
     name?: string;
     selfie?: string;

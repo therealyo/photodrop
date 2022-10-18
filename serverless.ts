@@ -11,7 +11,7 @@ import {
     setClientSelfie,
     getClientAlbums,
     getClientAlbumPhoto,
-    purchaseAlbum
+    purchaseAlbum,
 } from './src/functions/client/';
 import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo';
 
@@ -48,6 +48,7 @@ const serverlessConfiguration: AWS = {
         getClientAlbums,
         getClientAlbumPhoto,
         purchaseAlbum,
+        // handlePurchase,
         handleUpload,
         getPresignedUrl,
         addNumbers

@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { PhoneNumber } from './PhoneNumber';
 import connection from '../connectors/sql.connector';
 import { Album } from './Album';
 import { getQueryResult } from '../services/query.service';
@@ -43,40 +42,10 @@ export class User implements IUser {
         return entries ? true : false;
     }
 
-    static async searchClient(user: User, contains: string): Promise<PhoneNumber | undefined> {
-        const validNumber = `+${contains.replace(' ', '+')}`.replace('++', '+');
-        const result = getQueryResult(
-            await connection.query(
-                'SELECT *  FROM numbers INNER JOIN usersPhones ON numbers.numberId=usersPhones.numberId WHERE userId=? AND number=?;',
-                [[user.userId], [contains]]
-            )
-        );
-        return result[0];
-    }
-
     static async getUserAlbums(user: User): Promise<Album[]> {
         const result = getQueryResult(
             await connection.query('SELECT albumId, name, location, date FROM albums WHERE userId=?', [[user.userId!]])
         );
         return result;
     }
-
-    // static async countUserPhotos(user: User): Promise<number> {
-    //     const userAlbums = await User.getUserAlbums(user);
-    //     const photoAmounts = await Promise.all(
-    //         userAlbums.map(async (album) => {
-    //             const amount = await Album.countPhotos(album);
-    //             return amount;
-    //         })
-    //     );
-    //     return photoAmounts.reduce((prev, next) => prev + next, 0);
-    // }
-
-    // static async photosUntilWaterMark(user: User): Promise<number> {
-    //     const photoAmount = await User.countUserPhotos(user);
-    //     return photoAmount - 3;
-    // }
-
-    // Возвращать данные созданного альбома
-    // При запросе на альюом возвращать его айди
 }

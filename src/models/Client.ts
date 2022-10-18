@@ -62,10 +62,6 @@ export class Client implements IClient {
         return result[0]
     }
 
-    static async setSelfie(client: Client, link: string): Promise<void> {
-        await connection.query('UPDATE clients SET selfieLink=? WHERE clientId=?', [[link], [client.clientId]])
-    }
-
     static async setPersonalData(client: Client, name: string | undefined, email: string | undefined) {
         await connection.query('UPDATE clients SET name=?, email=? WHERE clientId=?', [
             [name],
@@ -97,12 +93,22 @@ export class Client implements IClient {
             })
 
             return {
+                purchased: await this.checkPurchased(client, albumId),
                 ...albumData,
                 photos: clientPhotos
             }
         } else {
             throw new ApiError(404, 'Album does not exist')
         }
+    }
+
+    static async checkPurchased(client: Client, albumId: string) {
+        const clientAlbums = await this.getPurchasedAlbums(client)
+        if (clientAlbums.includes(albumId)) {
+            return true;
+        }
+
+        return false
     }
 
     static async getPurchasedAlbums(client: Client) {
