@@ -83,7 +83,6 @@ export class Client implements IClient {
         const albums = await Client.getAlbums(client)
         if (albums.includes(albumId)) {
             const albumData = await Album.getAlbumData(albumId)
-            // console.log(`WITH clientsPhotos AS (SELECT * FROM numbersOnPhotos WHERE clientId="${client.clientId}" AND albumId="${albumId}") SELECT * FROM photos LEFT JOIN clientsPhotos ON photos.photoId=clientsPhotos.photoId;`);
             const clientPhotos = getQueryResult(
                 await connection.query(
                     `WITH clientsPhotos AS (SELECT * FROM numbersOnPhotos WHERE clientId="${client.clientId}" AND albumId="${albumId}") SELECT photos.photoId as photoId, photos.albumId as albumId, photos.extension as extension FROM photos LEFT JOIN clientsPhotos ON photos.photoId=clientsPhotos.photoId;`

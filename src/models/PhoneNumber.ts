@@ -45,7 +45,6 @@ export class PhoneNumber {
             return [user.userId, client.clientId];
         });
         try {
-            // console.log('Relation: ', userNumberRelation);
             await connection.query('INSERT IGNORE INTO usersPhones (userId, clientId) VALUES ?;', [userNumberRelation]);
         } catch (err) {
             throw err;

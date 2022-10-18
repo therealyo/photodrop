@@ -59,10 +59,6 @@ export class Photo {
         return photoName
     }
 
-    // static async save(albumId: string, photos: string[], numbers: string[]): Promise<void> {
-    //     await Photo.savePhotoNumbersRelation(albumId, photos, numbers);
-    // }
-
     static async savePhotoNumbersRelation(albumId: string, photos: string[], clients: Client[]): Promise<void> {
         const relations = photos
             .map((photo) => {
@@ -73,7 +69,6 @@ export class Photo {
         try {
             await connection.query('INSERT INTO numbersOnPhotos (photoId, clientId, albumId) VALUES ?;', [relations])
         } catch (err) {
-            // console.log(err);
             throw err
         }
     }

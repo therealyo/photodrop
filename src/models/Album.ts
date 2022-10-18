@@ -34,15 +34,6 @@ export class Album {
         }
     }
 
-    // static async getAlbumId(user: User, name: string): Promise<string> {
-    //     try {
-    //         const albumData = await Album.getAlbumData(user, name);
-    //         return albumData.albumId!;
-    //     } catch (err) {
-    //         throw new ApiError(404, `Album ${name} does not exist`);
-    //     }
-    // }
-
     static async getAlbumData(albumId: string): Promise<Album> {
         const result = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]));
         return result[0];

@@ -11,9 +11,7 @@ import { Album } from '../models/Album';
 class ClientService {
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.sendOtp(number);
-        // const clientData = await Client.getClientData(number)
 
-        // if (clientData) {
         const client = await Client.getData(number);
 
         if (client) {
@@ -23,7 +21,6 @@ class ClientService {
             if (newNumber) throw ApiError.BadRequest('User does not exist');
             else {
                 const newClient = new Client(number);
-                // await newClient.setFolder();
                 await newClient.save();
                 await Client.updateOtp(newClient, otp);
             }
@@ -65,7 +62,6 @@ class ClientService {
     async setSelfie(client: Client): Promise<PresignedUrl> {
         const selfieName = await Photo.generateName();
         const link = await presignedUrlService.getPresignedUrl(`selfies/${client.clientId}/${selfieName}`);
-        // await Client.setSelfie(client, selfieName);
         return link;
     }
 
@@ -76,7 +72,6 @@ class ClientService {
 
     async getClientAlbums(client: Client) {
         const purchasedAlbums = await Client.getPurchasedAlbums(client);
-        console.log(purchasedAlbums);
 
         return await Promise.all(
             (
@@ -91,8 +86,6 @@ class ClientService {
     async getClientAlbumData(client: Client, albumId: string) {
         return await Client.getClientAlbumPhotos(client, albumId);
     }
-    /* TODO: make implementation for client/getAllAlbums 
-       TODO: make implementation for client/getAlbum */
 }
 
 export default new ClientService();
