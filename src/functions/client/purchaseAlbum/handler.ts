@@ -10,6 +10,8 @@ export const purchaseAlbum = async (event) => {
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
         const albumData = await clientService.getClientAlbumData(user, albumId);
 
+        console.log(albumId);
+
         const session = await stripe.checkout.sessions.create({
             line_items: [
                 {
@@ -17,15 +19,17 @@ export const purchaseAlbum = async (event) => {
                         currency: 'usd',
                         product_data: {
                             name: albumData.name,
-                            metadata: {
-                                albumId
-                            }
+                            
                         },
                         unit_amount: 500
                     },
                     quantity: 1
                 }
             ],
+            metadata: {
+                albumId: albumId,
+                clientId: user.clientId
+            },
             mode: 'payment',
             success_url: `https://example.com?success=true`,
             cancel_url: `https://example.com?canceled=true`

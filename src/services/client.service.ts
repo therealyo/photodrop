@@ -9,6 +9,7 @@ import { ClientData } from '../@types/ClientData';
 import { Album } from '../models/Album';
 
 class ClientService {
+    
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.sendOtp(number);
 
@@ -85,6 +86,10 @@ class ClientService {
 
     async getClientAlbumData(client: Client, albumId: string) {
         return await Client.getClientAlbumPhotos(client, albumId);
+    }
+
+    async handlePurchase(clientId: string, albumId: string) {
+        await Client.purchase(clientId, albumId)
     }
 }
 

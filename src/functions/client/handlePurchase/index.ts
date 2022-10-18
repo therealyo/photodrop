@@ -6,7 +6,7 @@ export const handlePurchase = {
         {
             http: {
                 method: "post",
-                path: "handlePurchase",
+                path: "client/handlePurchase",
                 cors: true
             }
         }

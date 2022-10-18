@@ -22,7 +22,6 @@ export class Client implements IClient {
         this.number = number
     }
 
-
     async save(): Promise<void> {
         await connection.query(
             'INSERT IGNORE INTO clients (clientId, number, name, email, selfieLink, token, expires) VALUES (?)',
@@ -104,7 +103,7 @@ export class Client implements IClient {
     static async checkPurchased(client: Client, albumId: string) {
         const clientAlbums = await this.getPurchasedAlbums(client)
         if (clientAlbums.includes(albumId)) {
-            return true;
+            return true
         }
 
         return false
@@ -112,9 +111,19 @@ export class Client implements IClient {
 
     static async getPurchasedAlbums(client: Client) {
         const res = getQueryResult(
-            await connection.query('SELECT * FROM clientsAlbums WHERE clientId=?', [[client.clientId]])
-        )[0]
+            await connection.query('SELECT albumId FROM clientsAlbums WHERE clientId=?', [[client.clientId]])
+        )
 
-        return res ? res : []
+        return res
+            ? res.map(({ albumId }) => {
+                  return albumId
+              })
+            : []
+    }
+
+    static async purchase(clientId: string, albumId: string) {
+        await connection.query(
+            `INSERT IGNORE INTO clientsAlbums (clientId, albumId) VALUES ('${clientId}', '${albumId}')`
+        )
     }
 }
