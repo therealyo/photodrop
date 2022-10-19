@@ -27,7 +27,7 @@ class ClientService {
             }
         }
 
-        return client.number;
+        return number
     }
 
     async verifyClient(number: string, code: string, newNumber?: string): Promise<string | undefined> {
