@@ -7,10 +7,7 @@ import clientService from '../../../services/client.service';
 
 const sendOtpHandler: ValidatedEventAPIGatewayProxyEvent<typeof sendOtpSchema> = async (event: any) => {
     try {
-        console.log("Body: ", event.body);
-        console.log("Number: ", event.body.number);
         const { number, newNumber } = event.body;
-        console.log("destruct: ", number);
         const result = await clientService.createClient(number, newNumber);
 
         return formatJSONResponse(200, { number: result });
