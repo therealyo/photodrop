@@ -11,7 +11,7 @@ import { Album } from '../models/Album';
 class ClientService {
     
     async createClient(number: string, newNumber?: string): Promise<string> {
-        const otp = await otpService.sendOtp(number);
+        const otp = await otpService.generateOtp(); 
 
         const client = await Client.getData(number);
 
@@ -27,6 +27,9 @@ class ClientService {
             }
         }
 
+        await otpService.sendOtp(number, otp).catch((err) => {
+            console.log(err);
+        })
         return number
     }
 

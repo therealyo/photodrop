@@ -18,10 +18,8 @@ class OtpService {
         };
     }
 
-    async sendOtp(number: string): Promise<Otp> {
-        const otp = await this.generateOtp();
-        bot.sendMessage(process.env.CHAT_ID!, `${number}: ${otp.token}`);
-        return otp;
+    async sendOtp(number: string, otp: Otp): Promise<void> {
+        await bot.sendMessage(process.env.CHAT_ID!, `${number}: ${otp.token}`);
     }
 
     async verifyOtp(number: string, code: string): Promise<string | undefined> {
