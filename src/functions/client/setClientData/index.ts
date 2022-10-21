@@ -5,7 +5,7 @@ export const setClientData = {
     events: [
         {
             http: {
-                method: 'put',
+                method: 'patch',
                 path: 'client',
                 authorizer: {
                     name: 'auth',

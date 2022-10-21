@@ -1,3 +1,4 @@
+import { Otp } from './../@types/Otp';
 import otpService from './otp.service';
 import tokenService from './token.service';
 import presignedUrlService from './presignedUrl.service';
@@ -9,7 +10,13 @@ import { ClientData } from '../@types/ClientData';
 import { Album } from '../models/Album';
 
 class ClientService {
-    
+    private async sendOtp(number: string, otp: Otp) {
+        await otpService.sendOtp(number, otp).catch((err) => {
+            console.log(err);
+        })
+        return number
+    } 
+
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.generateOtp(); 
 
@@ -17,7 +24,11 @@ class ClientService {
 
         if (client) {
             await Client.updateOtp(client, otp);
-            if (newNumber) await Client.setNewNumber(client, newNumber);
+            if (newNumber)  {
+                await Client.setNewNumber(client, newNumber);
+                return await this.sendOtp(newNumber, otp)
+            }
+
         } else {
             if (newNumber) throw ApiError.BadRequest('User does not exist');
             else {
@@ -27,10 +38,7 @@ class ClientService {
             }
         }
 
-        await otpService.sendOtp(number, otp).catch((err) => {
-            console.log(err);
-        })
-        return number
+        return await this.sendOtp(number, otp);
     }
 
     async verifyClient(number: string, code: string, newNumber?: string): Promise<string | undefined> {
@@ -59,7 +67,7 @@ class ClientService {
             number: userData!.number,
             email: userData!.email,
             name: userData!.name,
-            selfie: `${process.env.BUCKET_PATH}selfies/${userData!.clientId}/${userData!.selfieLink}`
+            selfie: userData!.selfieLink ? `${process.env.BUCKET_PATH}selfies/${userData!.clientId}/${userData!.selfieLink}`: null
         };
     }
 

@@ -17,8 +17,8 @@ export const verifyOtpSchema = {
 
 export const setClientDataSchema = {
     body: object({
-        name: string().required(),
-        email: string().email().required()
+        name: string(),
+        email: string().email()
     })
 };
 
