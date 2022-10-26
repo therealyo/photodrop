@@ -2,10 +2,10 @@ import TelegramBot from 'node-telegram-bot-api';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { Client } from '../models/Client';
 import { Otp } from '../@types/Otp';
 import tokenService from './token.service';
 import { ApiError } from '../errors/api.error';
+import clientService from './client.service';
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!, { polling: true });
 
@@ -23,7 +23,7 @@ class OtpService {
     }
 
     async verifyOtp(number: string, code: string): Promise<string | undefined> {
-        const client = await Client.getData(number);
+        const client = await clientService.getClient(number);
 
         if (client) {
             if (client.token === code && this.compareDates(new Date(), new Date(client.expires))) {

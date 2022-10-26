@@ -2,8 +2,6 @@ import { User } from '../models/User';
 import { verify, sign } from 'jsonwebtoken';
 import { ApiError } from '../errors/api.error';
 import { Client } from '../models/Client';
-import { IUser } from '../@types/interfaces/IUser';
-import { IClient } from '../@types/interfaces/IClient';
 
 class TokenService {
     async generateToken(payload: User | Client): Promise<string> {
@@ -16,9 +14,9 @@ class TokenService {
         return `Bearer ${accessToken}`;
     }
 
-    async validateToken(token: string): Promise<IUser | IClient | undefined> {
+    async validateToken(token: string): Promise<User | Client | undefined> {
         try {
-            const decoded = verify(token, process.env.SECRET!) as IUser & IClient;
+            const decoded = verify(token, process.env.SECRET!) as User & Client;
             const { password, ...userData } = decoded;
             return userData;
         } catch (err) {

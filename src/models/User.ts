@@ -1,11 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import connection from '../connectors/sql.connector';
-import { Album } from './Album';
-import { getQueryResult } from '../services/query.service';
-import { IUser } from '../@types/interfaces/IUser';
 
-export class User implements IUser {
+export class User {
     login: string;
     password: string;
     userId?: string;
@@ -25,27 +22,5 @@ export class User implements IUser {
             [this.login, this.password, this.email, this.fullName]
         ]);
         return `User ${this.email} saved`;
-    }
-
-    static async getUserData(id: number): Promise<User>;
-    static async getUserData(email: string): Promise<User>;
-    static async getUserData(arg: string | number): Promise<User> {
-        const param = typeof arg === 'string' ? 'email' : 'userId';
-        const result = getQueryResult(
-            await connection.query(`SELECT userId, login, password, email, fullName FROM users WHERE ${param}=?`, [arg])
-        );
-        return result[0];
-    }
-
-    static async exists(login: string): Promise<boolean> {
-        const entries = await User.getUserData(login);
-        return entries ? true : false;
-    }
-
-    static async getUserAlbums(user: User): Promise<Album[]> {
-        const result = getQueryResult(
-            await connection.query('SELECT albumId, name, location, date FROM albums WHERE userId=?', [[user.userId!]])
-        );
-        return result;
     }
 }

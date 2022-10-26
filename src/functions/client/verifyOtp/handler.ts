@@ -1,7 +1,6 @@
 import { verifyOtpSchema } from './../../../validation/client.validation';
 import { middyfy } from './../../../libs/lambda';
 import clientService from '../../../services/client.service';
-// import phoneService from '../../../services/phoneNumber.service';
 import { handleError } from './../../../errors/errorHandler';
 import { ValidatedEventAPIGatewayProxyEvent, formatJSONResponse } from './../../../libs/api-gateway';
 

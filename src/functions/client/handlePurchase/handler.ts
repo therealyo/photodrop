@@ -8,7 +8,7 @@ export const handlePurchase = async (event) => {
 
         const { albumId, clientId } = stripeEvent.data.object.metadata
 
-        await clientService.handlePurchase(clientId, albumId)
+        await clientService.purchase(clientId, albumId)
         return formatJSONResponse(200, {
             data: {
                 albumId,

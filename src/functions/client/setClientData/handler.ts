@@ -9,9 +9,9 @@ const setClientDataHandler: ValidatedEventAPIGatewayProxyEvent<typeof setClientD
     try {
         const { name, email } = event.body;
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
-        const message = await clientService.setPersonalData(user, name, email);
+        await clientService.setPersonalData(user, name, email);
 
-        return formatJSONResponse(200, { message });
+        return formatJSONResponse(200, { message: "profile changed" });
     } catch (err) {
         const e = handleError(err);
         return formatJSONResponse(e.statusCode, e.body);

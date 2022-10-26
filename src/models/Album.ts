@@ -2,8 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import connection from '../connectors/sql.connector';
 import { User } from './User';
 import { ApiError } from '../errors/api.error';
-import { PhotoId } from '../@types/PhotoId';
-import { getQueryResult } from '../services/query.service';
 
 export class Album {
     albumId?: string;
@@ -32,27 +30,5 @@ export class Album {
         } catch (err) {
             throw new ApiError(500, `Album ${this.albumId} already exists`);
         }
-    }
-
-    static async getAlbumData(albumId: string): Promise<Album> {
-        const result = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]));
-        return result[0];
-    }
-
-    static async getAlbumPhotos(albumId: string): Promise<PhotoId[]> {
-        const result = getQueryResult(
-            await connection.query('SELECT photoId, extension FROM photos WHERE albumId=?', [[albumId]])
-        );
-        return result;
-    }
-
-    static async countPhotos(album: Album): Promise<number> {
-        const photos = await Album.getAlbumPhotos(album.albumId!);
-        return photos.length;
-    }
-
-    static async delete(name: string, userId: number): Promise<string> {
-        await connection.query('DELETE FROM albums WHERE name=? AND userId=?', [[name], [userId]]);
-        return `Deleted ${name}`;
     }
 }

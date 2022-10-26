@@ -6,8 +6,11 @@ import { ApiError } from './../errors/api.error';
 import { Client } from '../models/Client';
 import { Photo } from '../models/Photo';
 import { PresignedUrl } from '../@types/PresignedUrl';
-import { ClientData } from '../@types/ClientData';
+import albumService from './album.service';
+import { getQueryResult } from '../libs/queryResult';
 import { Album } from '../models/Album';
+import connection from '../connectors/sql.connector'
+import photoService from './photo.service';
 
 class ClientService {
     private async sendOtp(number: string, otp: Otp) {
@@ -16,16 +19,43 @@ class ClientService {
         })
         return number
     } 
+    
+    private async updateOtp(client: Client, otp: Otp): Promise<void> {
+        await connection.query('UPDATE clients SET token=?, expires=? WHERE clientId=?', [
+            [otp.token],
+            [otp.expires],
+            [client.clientId]
+        ])
+    }
+
+    private async setNewNumber(client: Client, number: string): Promise<void> {
+        await connection.query('UPDATE clients SET newNumber=? WHERE clientId=?', [[number], [client.clientId]])
+    }
+
+    private async verifyChangeNumber(client: Client, number: string): Promise<boolean> {
+        const result = getQueryResult(
+            await connection.query('SELECT newNumber FROM clients WHERE clientId=?', [[client.clientId]])
+        )
+        const newNumber = result[0].newNumber
+        return number === newNumber
+    }
+
+    private async changeNumber(client: Client, number: string): Promise<void> {
+        await connection.query('UPDATE clients SET number=?, newNumber="undefined" WHERE clientId=?', [
+            [number],
+            client.clientId
+        ])
+    }
 
     async createClient(number: string, newNumber?: string): Promise<string> {
         const otp = await otpService.generateOtp(); 
 
-        const client = await Client.getData(number);
+        const client = await this.getClient(number);
 
         if (client) {
-            await Client.updateOtp(client, otp);
+            await this.updateOtp(client, otp);
             if (newNumber)  {
-                await Client.setNewNumber(client, newNumber);
+                await this.setNewNumber(client, newNumber);
                 return await this.sendOtp(newNumber, otp)
             }
 
@@ -34,7 +64,7 @@ class ClientService {
             else {
                 const newClient = new Client(number);
                 await newClient.save();
-                await Client.updateOtp(newClient, otp);
+                await this.updateOtp(newClient, otp);
             }
         }
 
@@ -44,13 +74,13 @@ class ClientService {
     async verifyClient(number: string, code: string, newNumber?: string): Promise<string | undefined> {
         const verified = await otpService.verifyOtp(number, code);
         if (verified) {
-            const client = await Client.getData(number);
+            const client = await this.getClient(number);
             if (newNumber) {
-                if (await Client.getData(newNumber)) {
+                if (await this.getClient(newNumber)) {
                     throw ApiError.BadRequest('Cannot change number. User with such number already exists');
                 }
-                if (await Client.verifyChangeNumber(client!, newNumber)) {
-                    await Client.changeNumber(client!, newNumber);
+                if (await this.verifyChangeNumber(client!, newNumber)) {
+                    await this.changeNumber(client!, newNumber);
                     return 'Number changed';
                 } else {
                     throw ApiError.BadRequest('New number not verified');
@@ -61,47 +91,100 @@ class ClientService {
         }
     }
 
-    async getClient(client: Client): Promise<ClientData> {
-        const userData = await Client.getData(client.number);
-        return {
-            number: userData!.number,
-            email: userData!.email,
-            name: userData!.name,
-            selfie: userData!.selfieLink ? `${process.env.BUCKET_PATH}selfies/${userData!.clientId}/${userData!.selfieLink}`: null
-        };
+    async setPersonalData(client: Client, name: string | undefined, email: string | undefined) {
+        await connection.query('UPDATE clients SET name=?, email=? WHERE clientId=?', [
+            [name],
+            [email],
+            [client.clientId]
+        ])
+    }
+
+    async getClient(number: string): Promise<Client | undefined> {
+        const clientData = getQueryResult(await connection.query('SELECT * FROM clients WHERE number=?', [[number]]))[0]
+        return clientData
     }
 
     async setSelfie(client: Client): Promise<PresignedUrl> {
-        const selfieName = await Photo.generateName();
+        const selfieName = await photoService.generateName();
         const link = await presignedUrlService.getPresignedUrl(`selfies/${client.clientId}/${selfieName}`);
         return link;
     }
 
-    async setPersonalData(client: Client, name: string | undefined, email: string | undefined): Promise<string> {
-        await Client.setPersonalData(client, name, email);
-        return 'profile changed';
+    async getAlbums(client: Client): Promise<string[]> {
+        const clientAlbumsIds = getQueryResult(
+            await connection.query('SELECT DISTINCT albumId FROM numbersOnPhotos WHERE clientId;', [client.clientId])
+        )
+        return clientAlbumsIds.map(({ albumId }) => {
+            return albumId
+        })
     }
 
     async getClientAlbums(client: Client) {
-        const purchasedAlbums = await Client.getPurchasedAlbums(client);
+        const purchasedAlbums = await this.getPurchasedAlbums(client);
 
         return await Promise.all(
             (
-                await Client.getAlbums(client)
+                await this.getAlbums(client)
             ).map(async (albumId) => {
                 const purchased = purchasedAlbums.includes(albumId);
-                return { purchased, ...(await Album.getAlbumData(albumId)) };
+                return { purchased, ...(await albumService.getAlbumData(albumId)) };
             })
         );
     }
 
-    async getClientAlbumData(client: Client, albumId: string) {
-        return await Client.getClientAlbumPhotos(client, albumId);
+    async getAlbumPhotos(client: Client, album: Album) {
+        return getQueryResult(
+            await connection.query(
+                `WITH clientsPhotos AS (SELECT * FROM numbersOnPhotos WHERE clientId="${client.clientId}" AND albumId="${album.albumId}") SELECT photos.photoId as photoId, photos.albumId as albumId, photos.extension as extension FROM photos LEFT JOIN clientsPhotos ON photos.photoId=clientsPhotos.photoId;`
+            )
+        ).map((photo: Photo) => {
+            return `${process.env.BUCKET_PATH}${album.path}${photo.photoId}.${photo.extension}`
+        })
     }
 
-    async handlePurchase(clientId: string, albumId: string) {
-        await Client.purchase(clientId, albumId)
+    async purchase(clientId: string, albumId: string) {
+        await connection.query(
+            `INSERT IGNORE INTO clientsAlbums (clientId, albumId) VALUES ('${clientId}', '${albumId}')`
+        )
     }
+
+    async getPurchasedAlbums(client: Client) {
+        const res = getQueryResult(
+            await connection.query('SELECT albumId FROM clientsAlbums WHERE clientId=?', [[client.clientId]])
+        )
+
+        return res
+            ? res.map(({ albumId }) => {
+                return albumId
+            })
+            : []
+    }
+
+    async checkPurchased(client: Client, albumId: string) {
+        const clientAlbums = await this.getPurchasedAlbums(client)
+        if (clientAlbums.includes(albumId)) {
+            return true
+        }
+
+        return false
+    }
+
+    async getClientAlbumData(client: Client, albumId: string) {
+        const albums = await this.getAlbums(client)
+        if (albums.includes(albumId)) {
+            const album = await albumService.getAlbumData(albumId)
+            const photos = await this.getAlbumPhotos(client, album)
+
+            return {
+                purchased: await this.checkPurchased(client, albumId),
+                ...album,
+                photos
+            }
+        } else {
+            throw new ApiError(404, 'Album does not exist')
+        }
+    }
+
 }
 
 export default new ClientService();

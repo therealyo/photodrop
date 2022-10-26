@@ -3,7 +3,6 @@ import { handleError } from './../../../errors/errorHandler';
 import { sendOtpSchema } from './../../../validation/client.validation';
 import { ValidatedEventAPIGatewayProxyEvent, formatJSONResponse } from './../../../libs/api-gateway';
 import clientService from '../../../services/client.service';
-// import phoneService from '../../../services/phoneNumber.service';
 
 const sendOtpHandler: ValidatedEventAPIGatewayProxyEvent<typeof sendOtpSchema> = async (event: any) => {
     try {
