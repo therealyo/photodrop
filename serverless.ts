@@ -19,7 +19,12 @@ import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
     frameworkVersion: '3',
-    plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dotenv-plugin'],
+    plugins: [
+        'serverless-esbuild',
+        'serverless-offline',
+        'serverless-dotenv-plugin',
+        'serverless-iam-roles-per-function'
+    ],
     provider: {
         name: 'aws',
         region: 'eu-west-2',
@@ -68,7 +73,8 @@ const serverlessConfiguration: AWS = {
             packagerOptions: {
                 scripts: ['rm -rf node_modules/sharp', 'npm install --arch=x64 --platform=linux sharp']
             }
-        }
+        },
+        bucket: "therealyo-photopass"
     }
 }
 

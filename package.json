@@ -61,6 +61,7 @@
         "serverless": "^3.0.0",
         "serverless-dotenv-plugin": "^4.0.2",
         "serverless-esbuild": "^1.23.3",
+        "serverless-iam-roles-per-function": "^3.2.0",
         "serverless-offline": "^10.3.0",
         "ts-node": "^10.4.0",
         "tsconfig-paths": "^3.9.0",
