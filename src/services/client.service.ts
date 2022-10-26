@@ -12,6 +12,7 @@ import { Album } from '../models/Album';
 import connection from '../connectors/sql.connector'
 import photoService from './photo.service';
 
+
 class ClientService {
     private async sendOtp(number: string, otp: Otp) {
         await otpService.sendOtp(number, otp).catch((err) => {
@@ -106,7 +107,7 @@ class ClientService {
 
     async setSelfie(client: Client): Promise<PresignedUrl> {
         const selfieName = await photoService.generateName();
-        const link = await presignedUrlService.getPresignedUrl(`selfies/${client.clientId}/${selfieName}`);
+        const link = await presignedUrlService.getPresignedUrlUpload(`selfies/${client.clientId}/${selfieName}`);
         return link;
     }
 
@@ -133,13 +134,13 @@ class ClientService {
     }
 
     async getAlbumPhotos(client: Client, album: Album) {
-        return getQueryResult(
+        return await Promise.all(getQueryResult(
             await connection.query(
                 `WITH clientsPhotos AS (SELECT * FROM numbersOnPhotos WHERE clientId="${client.clientId}" AND albumId="${album.albumId}") SELECT photos.photoId as photoId, photos.albumId as albumId, photos.extension as extension FROM photos LEFT JOIN clientsPhotos ON photos.photoId=clientsPhotos.photoId;`
             )
-        ).map((photo: Photo) => {
+        ).map(async (photo: Photo) => {
             return `${process.env.BUCKET_PATH}${album.path}${photo.photoId}.${photo.extension}`
-        })
+        }))
     }
 
     async purchase(clientId: string, albumId: string) {

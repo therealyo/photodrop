@@ -14,7 +14,7 @@ const presignedUrlHanlder: ValidatedEventAPIGatewayProxyEvent<typeof getPresigne
         const user = JSON.parse(event.requestContext.authorizer.user) as User;
         const photoName = await photoService.generateName();
 
-        const uploadData = await presignedUrlService.getPresignedUrl(
+        const uploadData = await presignedUrlService.getPresignedUrlUpload(
             `albums/${user.email}/${albumId}/${photoName}.${extension}`
         );
 

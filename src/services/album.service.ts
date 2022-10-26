@@ -52,6 +52,17 @@ class AlbumService {
             throw ApiError.UnauthorizedError()
         }
     }
+
+    async setCover(albumId: string, photoId: string): Promise<void> {
+        await connection.execute(`UPDATE albums SET cover="${photoId}" WHERE albumId="${albumId}"`)
+    }
+
+    async getCover(albumId: string): Promise<string | undefined> {
+        const { cover } = getQueryResult(
+            await connection.execute(`SELECT cover FROM albums WHERE albumId="${albumId}"`)
+        )[0]
+        return cover
+    }
 }
 
 export default new AlbumService()

@@ -1,8 +1,8 @@
-import type { AWS } from '@serverless/typescript';
+import type { AWS } from '@serverless/typescript'
 
-import { auth } from './src/functions/auth';
-import { registration, login, getAlbums } from './src/functions/user';
-import { createAlbum, getAlbumData } from './src/functions/album';
+import { auth } from './src/functions/auth'
+import { registration, login, getAlbums } from './src/functions/user'
+import { createAlbum, getAlbumData } from './src/functions/album'
 import {
     sendOtp,
     verifyOtp,
@@ -13,8 +13,8 @@ import {
     getClientAlbumPhoto,
     purchaseAlbum,
     handlePurchase
-} from './src/functions/client/';
-import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo';
+} from './src/functions/client/'
+import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo'
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
@@ -63,9 +63,13 @@ const serverlessConfiguration: AWS = {
             target: 'node16',
             define: { 'require.resolve': undefined },
             platform: 'node',
-            concurrency: 10
+            concurrency: 10,
+            external: ['sharp'],
+            packagerOptions: {
+                scripts: ['rm -rf node_modules/sharp', 'npm install --arch=x64 --platform=linux sharp']
+            }
         }
     }
-};
+}
 
-module.exports = serverlessConfiguration;
+module.exports = serverlessConfiguration

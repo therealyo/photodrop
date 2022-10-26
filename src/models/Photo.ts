@@ -1,6 +1,7 @@
 import { PhoneNumber } from './PhoneNumber'
 import connection from '../connectors/sql.connector'
 import photoService from '../services/photo.service'
+import albumService from '../services/album.service'
 
 export class Photo {
     photoId?: string
@@ -15,9 +16,11 @@ export class Photo {
         this.albumId = null
     }
 
-    
-
     async saveAlbumPhoto() {
+        if (!await albumService.getCover(this.albumId)) {
+            console.log("no cover");
+            await albumService.setCover(this.albumId, this.photoId)
+        }
         await connection.query('INSERT INTO photos (photoId, albumId, extension) VALUES (?)', [
             [this.photoId, this.albumId, this.extension]
         ])
