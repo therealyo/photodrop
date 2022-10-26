@@ -2,8 +2,8 @@ import { middyfy } from '../../../libs/lambda';
 import { User } from '../../../models/User';
 import photoService from '../../../services/photo.service';
 import { addNumbersSchema } from '../../../validation/photo.validation';
-import { handleError } from './../../../errors/errorHandler';
-import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from './../../../libs/api-gateway';
+import { handleError } from '../../../errors/errorHandler';
+import { formatJSONResponse, ValidatedEventAPIGatewayProxyEvent } from '../../../libs/api-gateway';
 
 const addClientsToPhotosHanlder: ValidatedEventAPIGatewayProxyEvent<typeof addNumbersSchema> = async (event: any) => {
     try {
