@@ -86,13 +86,19 @@ class PhotoService {
     }
 
     private async downloadOriginal(photoName: string): Promise<Buffer> {
-        const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
-        const params = { Bucket: process.env.BUCKET_NAME, Key: photoName.replace('%40', '@') }
-        return (await s3.getObject(params).promise()).Body as Buffer
+        // const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
+        // const params = { Bucket: process.env.BUCKET_NAME, Key: photoName }
+        // return (await s3.getObject(params).promise()).Body as Buffer
+
+        const request = await axios.get(await presignedUrlService.getPresignedUrlRead(photoName), {
+            responseType: 'arraybuffer'
+        })
+
+        return Buffer.from(request.data, 'utf-8')
     }
 
     private async downloadWatermark(): Promise<void> {
-        const request = await axios.get(process.env.WATERMARK, {
+        const request = await axios.get(await presignedUrlService.getPresignedUrlRead(process.env.WATERMARK), {
             responseType: 'arraybuffer'
         })
 
@@ -135,12 +141,11 @@ class PhotoService {
 
     private async uploadPhoto(photo: Buffer, key: string): Promise<void> {
         const photoData = this.getPhotoData(photo)
-        await presignedUrlService.upload({
-            Bucket: process.env.BUCKET_NAME,
-            Key: key,
-            Body: photo,
-            ACL: 'public-read',
-            ContentType: photoData.contentType
+        const uploadUrl = (await presignedUrlService.getPresignedUrlUpload(key)).url
+        await axios.put(uploadUrl, photo, {
+            headers: {
+                "Content-Type": photoData.contentType
+            }
         })
     }
 
@@ -165,9 +170,12 @@ class PhotoService {
     }
 
     async generateCopies(photoName: string): Promise<void> {
+
         const originalPhoto = await this.downloadOriginal(photoName)
+        console.log("original: ", originalPhoto);
         const thumbnail = await this.createThumbnail(originalPhoto)
         await this.downloadWatermark()
+        console.log("Watermark: ", this.watermark)
 
         await Promise.all([
             this.saveThumbnail(thumbnail, photoName),

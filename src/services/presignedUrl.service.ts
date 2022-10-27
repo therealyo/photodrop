@@ -7,16 +7,23 @@ import bucket from '../connectors/s3.connector';
 dotenv.config()
 class PresignedUrlService {
     
-    async generateParams(path: string) {
+    async generateParamsUpload(path: string) {
         return {
             Bucket: process.env.BUCKET_NAME,
             Key: path,
-            // ACL: 'public-read'
+            ACL: 'bucket-owner-full-control'
+        };
+    }
+
+    async generateParamsRead(path: string) {
+        return {
+            Bucket: process.env.BUCKET_NAME,
+            Key: path,
         };
     }
 
     async getPresignedUrlUpload(path: string) {
-        const params = await this.generateParams(path);
+        const params = await this.generateParamsUpload(path);
 
         const url = await bucket.getSignedUrlPromise('putObject', params);
         return {
@@ -27,7 +34,7 @@ class PresignedUrlService {
     }
 
     async getPresignedUrlRead(path: string) {
-        const params = await this.generateParams(path)
+        const params = await this.generateParamsRead(path)
         return await bucket.getSignedUrlPromise("getObject", params)
 
     }

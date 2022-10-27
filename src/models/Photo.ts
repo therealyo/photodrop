@@ -18,8 +18,7 @@ export class Photo {
 
     async saveAlbumPhoto() {
         if (!await albumService.getCover(this.albumId)) {
-            console.log("no cover");
-            await albumService.setCover(this.albumId, this.photoId)
+            await albumService.setCover(this.albumId, `${this.photoId}.${this.extension}`)
         }
         await connection.query('INSERT INTO photos (photoId, albumId, extension) VALUES (?)', [
             [this.photoId, this.albumId, this.extension]

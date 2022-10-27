@@ -10,9 +10,9 @@ export const saveUpload = async (event: any) => {
 
         if (photo.albumId) {
             await photo.saveAlbumPhoto()
+            await photoService.generateCopies(fileName)
         }
 
         await photo.saveSelfie()
-        await photoService.generateCopies(fileName)
     }
 }

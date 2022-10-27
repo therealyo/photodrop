@@ -6,6 +6,7 @@ import { Album } from '../models/Album'
 import { User } from '../models/User'
 import { getQueryResult } from '../libs/queryResult'
 import { PhotoId } from '../@types/PhotoId'
+import presignedUrlService from './presignedUrl.service'
 
 dotenv.config()
 
@@ -18,8 +19,11 @@ class AlbumService {
     }
 
     async getAlbumData(albumId: string): Promise<Album> {
-        const result = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]))
-        return result[0]
+        const albumData = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]))[0]
+        return {
+            ...albumData,
+        cover: await presignedUrlService.getPresignedUrlRead(`thumbnail/${albumData.path}${albumData.cover}`)
+        }
     }
 
     async createAlbum(user: User, name: string, location: string, date: string | undefined): Promise<Album> {
