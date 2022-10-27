@@ -198,15 +198,15 @@ class ClientService {
 
     async getClientAlbumData(client: Client, albumId: string) {
         if (await this.isAlbumAvailableToClient(client, albumId)) {
-            const purchased = await this.getPurchasedAlbums(client)
-            const isPurchased = purchased.includes(albumId)
+            const purchasedAlbums = await this.getPurchasedAlbums(client)
+            const isPurchased = purchasedAlbums.includes(albumId)
             const album = await albumService.getAlbumData(albumId)
             const photos = await this.getAlbumPhotos(client, album)
 
             return {
                 purchased: isPurchased,
                 ...album,
-                photos: purchased
+                photos: isPurchased
                     ? await this.getAlbumPhotosWithoutWatermark(photos, album)
                     : await this.getAlbumPhotosWithWatermark(photos, album)
             }
