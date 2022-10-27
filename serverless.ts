@@ -10,7 +10,7 @@ import {
     getClient,
     setClientSelfie,
     getClientAlbums,
-    getClientAlbumPhoto,
+    getClientAlbumPhotos,
     purchaseAlbum,
     handlePurchase
 } from './src/functions/client/'
@@ -52,7 +52,7 @@ const serverlessConfiguration: AWS = {
         setClientSelfie,
         getClient,
         getClientAlbums,
-        getClientAlbumPhoto,
+        getClientAlbumPhotos,
         purchaseAlbum,
         handlePurchase,
         handleUpload,

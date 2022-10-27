@@ -18,7 +18,7 @@ export class Album {
         this.userId = user.userId!;
         this.location = location;
         this.date = new Date(date).toString() !== 'Invalid Date' ? new Date(date) : new Date();
-        this.path = `albums/${user.email}/${this.albumId}/`;
+        this.path = `albums/${user.userId}/${this.albumId}/`;
     }
 
     async save(): Promise<Album> {

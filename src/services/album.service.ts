@@ -35,7 +35,7 @@ class AlbumService {
                 const albumPhotos = await this.getAlbumPhotos(albumData.albumId!)
                 const photos = albumPhotos.map((photo) => {
                     return {
-                        url: `${process.env.BUCKET_PATH}${albumData.path}${photo.photoId}.${photo.extension}`
+                        url: photo
                     }
                 })
                 return {

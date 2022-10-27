@@ -12,7 +12,7 @@ import { Client } from '../models/Client'
 import clientService from './client.service'
 import connection from '../connectors/sql.connector'
 import phoneNumberService from './phoneNumber.service'
-import userService from './user.service'
+// import userService from './user.service'
 import { Photo } from '../models/Photo'
 import presignedUrlService from './presignedUrl.service'
 
@@ -44,11 +44,11 @@ class PhotoService {
 
     async processFileName(photo: Photo) {
         const split = photo.fileName.split('/')
-        const userName = split[1].replace('%40', '@')
+        const userId = split[1]
 
         if (split[0] === 'albums') {
-            const user = await userService.getUserData(userName)
-            photo.userId = user.userId
+            // const user = await userService.getUserData(userName)
+            photo.userId = userId
             photo.albumId = split[2]
             const [name, ext] = split[3].split('.')
             photo.photoId = name
@@ -118,8 +118,8 @@ class PhotoService {
     private async resizeWatermark(watermark: Buffer, size: Size): Promise<Buffer> {
         return await sharp(watermark)
             .resize({
-                height: Math.ceil(size.height * 0.304),
-                width: Math.ceil(size.width * 0.616)
+                height: Math.ceil(size.height * 0.304) + 10,
+                width: Math.ceil(size.width * 0.616) + 10
             })
             .toBuffer()
     }

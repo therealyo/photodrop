@@ -5,6 +5,7 @@ import { middyfy } from './../../../libs/lambda'
 import { handleError } from './../../../errors/errorHandler'
 import clientService from '../../../services/client.service'
 import { Client } from '../../../models/Client'
+import presignedUrlService from '../../../services/presignedUrl.service'
 
 const getClientHandler: Handler = async (event: any) => {
     try {
@@ -17,7 +18,7 @@ const getClientHandler: Handler = async (event: any) => {
                 email: userData!.email,
                 name: userData!.name,
                 selfie: userData!.selfieLink
-                    ? `${process.env.BUCKET_PATH}selfies/${userData!.clientId}/${userData!.selfieLink}`
+                    ? await presignedUrlService.getPresignedUrlRead(`selfies/${userData!.clientId}/${userData!.selfieLink}`)
                     : null
             }
         })

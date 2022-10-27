@@ -11,7 +11,7 @@ class PresignedUrlService {
         return {
             Bucket: process.env.BUCKET_NAME,
             Key: path,
-            ACL: 'public-read'
+            // ACL: 'public-read'
         };
     }
 

@@ -136,10 +136,17 @@ class ClientService {
     async getAlbumPhotos(client: Client, album: Album) {
         return await Promise.all(getQueryResult(
             await connection.query(
-                `WITH clientsPhotos AS (SELECT * FROM numbersOnPhotos WHERE clientId="${client.clientId}" AND albumId="${album.albumId}") SELECT photos.photoId as photoId, photos.albumId as albumId, photos.extension as extension FROM photos LEFT JOIN clientsPhotos ON photos.photoId=clientsPhotos.photoId;`
+                `SELECT 
+                    photos.photoId as photoId, 
+                    photos.albumId as albumId, 
+                    photos.extension as extension 
+                FROM photos 
+                    LEFT JOIN numbersOnPhotos 
+                        ON photos.photoId=numbersOnPhotos.photoId 
+                            WHERE numbersOnPhotos.clientId="${client.clientId}" AND numbersOnPhotos.albumId="${album.albumId}"`
             )
         ).map(async (photo: Photo) => {
-            return `${process.env.BUCKET_PATH}${album.path}${photo.photoId}.${photo.extension}`
+            return await presignedUrlService.getPresignedUrlRead(`${album.path}${photo.photoId}.${photo.extension}`)
         }))
     }
 
