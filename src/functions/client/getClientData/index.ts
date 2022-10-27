@@ -1,6 +1,8 @@
 import { handlerPath } from './../../../libs/handler-resolver';
+
 export const getClient = {
     handler: `${handlerPath(__dirname)}/handler.getClient`,
+
     events: [
         {
             http: {

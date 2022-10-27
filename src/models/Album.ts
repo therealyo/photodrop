@@ -1,16 +1,18 @@
+import { PhotoWithThumbnail } from './../@types/PhotoWithThumbnail';
 import { v4 as uuidv4 } from 'uuid';
 import connection from '../connectors/sql.connector';
 import { User } from './User';
 import { ApiError } from '../errors/api.error';
 
 export class Album {
+    purchased?: boolean;
     albumId?: string;
     name: string;
     userId: string;
     location: string;
     date: string | Date;
     path: string;
-    photos?: { url: string; watermark: boolean }[];
+    photos?: PhotoWithThumbnail[];
 
     constructor(name: string, user: User, location: string, date: string | undefined) {
         this.albumId = uuidv4();

@@ -22,7 +22,7 @@ class AlbumService {
         const albumData = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]))[0]
         return {
             ...albumData,
-        cover: await presignedUrlService.getPresignedUrlRead(`thumbnail/${albumData.path}${albumData.cover}`)
+            cover: await presignedUrlService.getPresignedUrlRead(`thumbnail/${albumData.path}${albumData.cover}`)
         }
     }
 

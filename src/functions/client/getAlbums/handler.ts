@@ -8,7 +8,7 @@ import clientService from '../../../services/client.service';
 const getClientAlbumsHanlder: Handler = async (event: any) => {
     try {
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
-        const albums = await clientService.getClientAlbums(user);
+        const albums = await clientService.getClientAlbumsData(user);
 
         return formatJSONResponse(200, { data: albums });
     } catch (err) {

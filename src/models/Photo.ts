@@ -25,10 +25,6 @@ export class Photo {
         ])
     }
 
-    async saveSelfie() {
-        await connection.query(`UPDATE clients SET selfieLink='${this.photoId}' WHERE clientId='${this.userId}'`)
-    }
-
     async setName(): Promise<void> {
         this.photoId = await photoService.generateName()
     }

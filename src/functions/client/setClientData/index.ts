@@ -2,6 +2,7 @@ import { handlerPath } from '../../../libs/handler-resolver';
 
 export const setClientData = {
     handler: `${handlerPath(__dirname)}/handler.setClientData`,
+
     events: [
         {
             http: {

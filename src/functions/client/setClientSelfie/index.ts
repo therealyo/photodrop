@@ -2,6 +2,7 @@ import { handlerPath } from '../../../libs/handler-resolver';
 
 export const setClientSelfie = {
     handler: `${handlerPath(__dirname)}/handler.setClientSelfie`,
+
     events: [
         {
             http: {

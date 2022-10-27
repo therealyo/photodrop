@@ -2,6 +2,7 @@ import { handlerPath } from './../../../libs/handler-resolver';
 
 export const getClientAlbumPhotos = {
     handler: `${handlerPath(__dirname)}/handler.getAlbumPhotos`,
+
     events: [
         {
             http: {

@@ -2,6 +2,7 @@ import { handlerPath } from '../../../libs/handler-resolver';
 
 export const getAlbums = {
     handler: `${handlerPath(__dirname)}/handler.getAlbums`,
+
     events: [
         {
             http: {

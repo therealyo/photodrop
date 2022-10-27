@@ -1,4 +1,3 @@
-import AWS from 'aws-sdk'
 import mime from 'mime-types'
 import sharp from 'sharp'
 import axios from 'axios'
@@ -12,7 +11,6 @@ import { Client } from '../models/Client'
 import clientService from './client.service'
 import connection from '../connectors/sql.connector'
 import phoneNumberService from './phoneNumber.service'
-// import userService from './user.service'
 import { Photo } from '../models/Photo'
 import presignedUrlService from './presignedUrl.service'
 
@@ -42,21 +40,20 @@ class PhotoService {
         await this.savePhotoNumbersRelation(albumId, photos, clients)
     }
 
-    async processFileName(photo: Photo) {
+    processAlbumPhoto(photo: Photo) {
         const split = photo.fileName.split('/')
-        const userId = split[1]
 
-        if (split[0] === 'albums') {
-            // const user = await userService.getUserData(userName)
-            photo.userId = userId
-            photo.albumId = split[2]
-            const [name, ext] = split[3].split('.')
-            photo.photoId = name
-            photo.extension = ext
-        } else if (split[0] === 'selfies') {
-            photo.userId = split[1]
-            photo.photoId = split[2]
-        }
+        photo.userId = split[1]
+        photo.albumId = split[2]
+        const [name, ext] = split[3].split('.')
+        photo.photoId = name
+        photo.extension = ext
+    }
+
+    processSelfiePhoto(photo: Photo) {
+        const split = photo.fileName.split('/')
+        photo.userId = split[1]
+        photo.photoId = split[2]
     }
 
     async generateName(): Promise<string> {
@@ -86,10 +83,6 @@ class PhotoService {
     }
 
     private async downloadOriginal(photoName: string): Promise<Buffer> {
-        // const s3 = new AWS.S3({ apiVersion: '2006-03-01' })
-        // const params = { Bucket: process.env.BUCKET_NAME, Key: photoName }
-        // return (await s3.getObject(params).promise()).Body as Buffer
-
         const request = await axios.get(await presignedUrlService.getPresignedUrlRead(photoName), {
             responseType: 'arraybuffer'
         })

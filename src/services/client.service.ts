@@ -11,9 +11,10 @@ import { getQueryResult } from '../libs/queryResult'
 import { Album } from '../models/Album'
 import connection from '../connectors/sql.connector'
 import photoService from './photo.service'
+import { PhotoWithThumbnail } from '../@types/PhotoWithThumbnail'
 
 class ClientService {
-    private async sendOtp(number: string, otp: Otp) {
+    private async sendOtp(number: string, otp: Otp): Promise<string> {
         await otpService.sendOtp(number, otp).catch((err) => {
             console.log(err)
         })
@@ -90,7 +91,7 @@ class ClientService {
         }
     }
 
-    async setPersonalData(client: Client, name: string | undefined, email: string | undefined) {
+    async setPersonalData(client: Client, name: string | undefined, email: string | undefined): Promise<void> {
         await connection.query('UPDATE clients SET name=?, email=? WHERE clientId=?', [
             [name],
             [email],
@@ -103,41 +104,37 @@ class ClientService {
         return clientData
     }
 
-    async setSelfie(client: Client): Promise<PresignedUrl> {
+    private async setSelfie(client: Client, photoName: string): Promise<void> {
+        await connection.query(`UPDATE clients SET selfieLink='${photoName}' WHERE clientId='${client.clientId}'`)
+    }
+
+    async getSelfieUpload(client: Client, extension: string): Promise<PresignedUrl> {
         const selfieName = await photoService.generateName()
-        const link = await presignedUrlService.getPresignedUrlUpload(`selfies/${client.clientId}/${selfieName}`)
+        await this.setSelfie(client, `${selfieName}.${extension}`)
+        const link = await presignedUrlService.getPresignedUrlUpload(
+            `selfies/${client.clientId}/${selfieName}.${extension}`
+        )
         return link
     }
 
-    private async getAlbums(client: Client): Promise<string[]> {
+    private async getAlbumsIds(client: Client): Promise<string[]> {
+        console.log(`SELECT DISTINCT albumId FROM numbersOnPhotos WHERE clientId="${client.clientId}";`)
         const clientAlbumsIds = getQueryResult(
-            await connection.query('SELECT DISTINCT albumId FROM numbersOnPhotos WHERE clientId;', [client.clientId])
+            await connection.query(`SELECT DISTINCT albumId FROM numbersOnPhotos WHERE clientId="${client.clientId}";`)
         )
+
         return clientAlbumsIds.map(({ albumId }) => {
             return albumId
         })
     }
 
-    async getClientAlbums(client: Client) {
-        const purchasedAlbums = await this.getPurchasedAlbums(client)
-
-        return await Promise.all(
-            (
-                await this.getAlbums(client)
-            ).map(async (albumId) => {
-                const purchased = purchasedAlbums.includes(albumId)
-                return { purchased, ...(await albumService.getAlbumData(albumId)) }
-            })
-        )
-    }
-
-    async purchase(clientId: string, albumId: string) {
+    async purchase(clientId: string, albumId: string): Promise<void> {
         await connection.query(
             `INSERT IGNORE INTO clientsAlbums (clientId, albumId) VALUES ('${clientId}', '${albumId}')`
         )
     }
 
-    async getPurchasedAlbums(client: Client) {
+    async getPurchasedAlbums(client: Client): Promise<string[]> {
         const res = getQueryResult(
             await connection.query('SELECT albumId FROM clientsAlbums WHERE clientId=?', [[client.clientId]])
         )
@@ -149,16 +146,7 @@ class ClientService {
             : []
     }
 
-    async checkPurchased(client: Client, albumId: string) {
-        const clientAlbums = await this.getPurchasedAlbums(client)
-        if (clientAlbums.includes(albumId)) {
-            return true
-        }
-
-        return false
-    }
-
-    private async getAlbumPhotos(client: Client, album: Album) {
+    private async getAlbumPhotos(client: Client, album: Album): Promise<Photo[]> {
         return getQueryResult(
             await connection.query(
                 `SELECT 
@@ -173,8 +161,7 @@ class ClientService {
         )
     }
 
-    async getAlbumPhotosWithoutWatermark(client: Client, album: Album) {
-        const photos = await this.getAlbumPhotos(client, album)
+    private async getAlbumPhotosWithoutWatermark(photos: Photo[], album: Album): Promise<PhotoWithThumbnail[]> {
         return await Promise.all(
             photos.map(async (photo: Photo) => {
                 return {
@@ -189,8 +176,7 @@ class ClientService {
         )
     }
 
-    async getAlbumPhotosWithWatermark(client: Client, album: Album) {
-        const photos = await this.getAlbumPhotos(client, album)
+    private async getAlbumPhotosWithWatermark(photos: Photo[], album: Album): Promise<PhotoWithThumbnail[]> {
         return await Promise.all(
             photos.map(async (photo: Photo) => {
                 return {
@@ -205,24 +191,38 @@ class ClientService {
         )
     }
 
-    async getClientAlbumData(client: Client, albumId: string) {
-        const albums = await this.getAlbums(client)
-        if (albums.includes(albumId)) {
-            const album = await albumService.getAlbumData(albumId)
-            // const photos = await this.getAlbumPhotos(client, album)
+    private async isAlbumAvailableToClient(client: Client, albumId: string): Promise<boolean> {
+        const clientsAlbums = await this.getAlbumsIds(client)
+        return clientsAlbums.includes(albumId)
+    }
 
-            const purchased = await this.checkPurchased(client, albumId)
+    async getClientAlbumData(client: Client, albumId: string) {
+        if (await this.isAlbumAvailableToClient(client, albumId)) {
+            const purchased = await this.getPurchasedAlbums(client)
+            const isPurchased = purchased.includes(albumId)
+            const album = await albumService.getAlbumData(albumId)
+            const photos = await this.getAlbumPhotos(client, album)
 
             return {
-                purchased,
+                purchased: isPurchased,
                 ...album,
                 photos: purchased
-                    ? await this.getAlbumPhotosWithoutWatermark(client, album)
-                    : await this.getAlbumPhotosWithWatermark(client, album)
+                    ? await this.getAlbumPhotosWithoutWatermark(photos, album)
+                    : await this.getAlbumPhotosWithWatermark(photos, album)
             }
         } else {
             throw new ApiError(404, 'Album does not exist')
         }
+    }
+
+    async getClientAlbumsData(client: Client) {
+        const albumsIds = await this.getAlbumsIds(client)
+        return await Promise.all(
+            albumsIds.map(async (albumId) => {
+                const albumData = await this.getClientAlbumData(client, albumId)
+                return albumData
+            })
+        )
     }
 }
 

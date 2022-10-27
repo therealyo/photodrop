@@ -14,7 +14,7 @@ import {
     purchaseAlbum,
     handlePurchase
 } from './src/functions/client/'
-import { handleUpload, getPresignedUrl, addNumbers } from './src/functions/photo'
+import { handleUpload, getPresignedUrl, addClients } from './src/functions/photo'
 
 const serverlessConfiguration: AWS = {
     service: 'photodrop',
@@ -23,7 +23,7 @@ const serverlessConfiguration: AWS = {
         'serverless-esbuild',
         'serverless-offline',
         'serverless-dotenv-plugin',
-        'serverless-iam-roles-per-function'
+        'serverless-iam-roles-per-function',
     ],
     provider: {
         name: 'aws',
@@ -57,7 +57,7 @@ const serverlessConfiguration: AWS = {
         handlePurchase,
         handleUpload,
         getPresignedUrl,
-        addNumbers
+        addClients
     },
     custom: {
         esbuild: {
@@ -74,7 +74,7 @@ const serverlessConfiguration: AWS = {
                 scripts: ['rm -rf node_modules/sharp', 'npm install --arch=x64 --platform=linux sharp']
             }
         },
-        bucket: "therealyo-photopass"
+        bucket: 'therealyo-photopass'
     }
 }
 

@@ -1,7 +1,8 @@
 import { handlerPath } from '../../../libs/handler-resolver';
 
-export const addNumbers = {
+export const addClients = {
     handler: `${handlerPath(__dirname)}/handler.addClients`,
+
     events: [
         {
             http: {

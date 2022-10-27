@@ -2,6 +2,7 @@ import { handlerPath } from '../../../libs/handler-resolver';
 
 export const purchaseAlbum = {
     handler: `${handlerPath(__dirname)}/handler.purchaseAlbum`,
+
     events: [
         {
             http: {

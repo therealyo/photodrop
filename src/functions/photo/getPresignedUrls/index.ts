@@ -11,6 +11,7 @@ export const getPresignedUrl = {
             "Resource": "arn:aws:s3:::${self:custom.bucket}/*"
         }
     ],
+
     events: [
         {
             http: {
