@@ -19,10 +19,14 @@ class AlbumService {
     }
 
     async getAlbumData(albumId: string): Promise<Album> {
-        const albumData = getQueryResult(await connection.query(`SELECT * FROM albums WHERE albumId=?`, [[albumId]]))[0]
+        const albumData = getQueryResult(
+            await connection.query(`SELECT albumId, userId, name, location, cover, date FROM albums WHERE albumId=?`, [
+                [albumId]
+            ])
+        )[0]
         return {
             ...albumData,
-            cover: await presignedUrlService.getPresignedUrlRead(`thumbnail/${albumData.path}${albumData.cover}`)
+            cover: await presignedUrlService.getPresignedUrlRead(`thumbnail/${this.getAlbumPath(albumData)}${albumData.cover}`)
         }
     }
 
@@ -66,6 +70,10 @@ class AlbumService {
             await connection.execute(`SELECT cover FROM albums WHERE albumId="${albumId}"`)
         )[0]
         return cover
+    }
+
+    getAlbumPath(album: Album) {
+        return `albums/${album.userId}/${album.albumId}/`
     }
 }
 

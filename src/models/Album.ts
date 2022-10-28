@@ -12,6 +12,7 @@ export class Album {
     location: string;
     date: string | Date;
     path: string;
+    cover?: string;
     photos?: PhotoWithThumbnail[];
 
     constructor(name: string, user: User, location: string, date: string | undefined) {

@@ -117,8 +117,8 @@ class PhotoService {
     private async resizeWatermark(watermark: Buffer, size: Size): Promise<Buffer> {
         return await sharp(watermark)
             .resize({
-                height: Math.ceil(size.height * 0.304) + 10,
-                width: Math.ceil(size.width * 0.616) + 10
+                height: Math.ceil(size.height * 0.31),
+                width: Math.ceil(size.width * 0.62)
             })
             .toBuffer()
     }
@@ -163,12 +163,9 @@ class PhotoService {
     }
 
     async generateCopies(photoName: string): Promise<void> {
-
         const originalPhoto = await this.downloadOriginal(photoName)
-        console.log("original: ", originalPhoto);
         const thumbnail = await this.createThumbnail(originalPhoto)
         await this.downloadWatermark()
-        console.log("Watermark: ", this.watermark)
 
         await Promise.all([
             this.saveThumbnail(thumbnail, photoName),
