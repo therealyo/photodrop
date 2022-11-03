@@ -10,16 +10,13 @@ export const purchaseAlbum = async (event) => {
         const user = JSON.parse(event.requestContext.authorizer.user) as Client;
         const albumData = await clientService.getClientAlbumData(user, albumId);
 
-        console.log(albumId);
-
         const session = await stripe.checkout.sessions.create({
             line_items: [
                 {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: albumData.name,
-                            
+                            name: albumData.name
                         },
                         unit_amount: 500
                     },

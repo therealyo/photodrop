@@ -19,7 +19,7 @@ dotenv.config()
 const randomBytes = promisify(crypto.randomBytes)
 type Size = { width: number; height: number }
 type PhotoData = {
-    size: Size,
+    size: Size
     contentType: string
 }
 
@@ -117,8 +117,9 @@ class PhotoService {
     private async resizeWatermark(watermark: Buffer, size: Size): Promise<Buffer> {
         return await sharp(watermark)
             .resize({
-                height: Math.ceil(size.height * 0.31),
-                width: Math.ceil(size.width * 0.62)
+                height: Math.ceil(size.height * 0.3125),
+                width: Math.ceil(size.width * 0.625),
+                fit: sharp.fit.inside,
             })
             .toBuffer()
     }
@@ -127,7 +128,9 @@ class PhotoService {
         return await sharp(photo)
             .resize({
                 width: 400,
-                height: 400
+                height: 400,
+                // fit: sharp.fit.inside,
+                withoutEnlargement: true
             })
             .toBuffer()
     }
@@ -137,7 +140,7 @@ class PhotoService {
         const uploadUrl = (await presignedUrlService.getPresignedUrlUpload(key)).url
         await axios.put(uploadUrl, photo, {
             headers: {
-                "Content-Type": photoData.contentType
+                'Content-Type': photoData.contentType
             }
         })
     }
@@ -164,8 +167,8 @@ class PhotoService {
 
     async generateCopies(photoName: string): Promise<void> {
         const originalPhoto = await this.downloadOriginal(photoName)
-        const thumbnail = await this.createThumbnail(originalPhoto)
         await this.downloadWatermark()
+        const thumbnail = await this.createThumbnail(originalPhoto)
 
         await Promise.all([
             this.saveThumbnail(thumbnail, photoName),

@@ -205,6 +205,7 @@ class ClientService {
 
             return {
                 purchased: isPurchased,
+                id: album.albumId,
                 name: album.name,
                 date: album.date,
                 location: album.location,
