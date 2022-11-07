@@ -19,6 +19,7 @@ class PresignedUrlService {
         return {
             Bucket: process.env.BUCKET_NAME,
             Key: path,
+            Expires: 86400
         };
     }
 

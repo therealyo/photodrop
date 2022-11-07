@@ -109,6 +109,7 @@ class PhotoService {
 
     private async addWatermark(photo: Buffer, watermark: Buffer): Promise<Buffer> {
         return await sharp(photo)
+            .rotate()
             .composite([{ input: watermark, gravity: 'center' }])
             .sharpen()
             .toBuffer()
@@ -119,17 +120,17 @@ class PhotoService {
             .resize({
                 height: Math.ceil(size.height * 0.3125),
                 width: Math.ceil(size.width * 0.625),
-                fit: sharp.fit.inside,
+                fit: sharp.fit.inside
             })
             .toBuffer()
     }
 
     private async createThumbnail(photo: Buffer): Promise<Buffer> {
         return await sharp(photo)
+            .rotate()
             .resize({
                 width: 400,
                 height: 400,
-                // fit: sharp.fit.inside,
                 withoutEnlargement: true
             })
             .toBuffer()

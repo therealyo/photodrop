@@ -28,8 +28,8 @@ export const purchaseAlbum = async (event) => {
                 clientId: user.clientId
             },
             mode: 'payment',
-            success_url: `https://example.com?success=true`,
-            cancel_url: `https://example.com?canceled=true`
+            success_url: `https://photo-drop-client-two.vercel.app/payment_success`,
+            cancel_url: `https://photo-drop-client-two.vercel.app/album/${albumId}`
         });
 
         return formatJSONResponse(200, { url: session.url });

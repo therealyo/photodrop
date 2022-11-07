@@ -23,7 +23,7 @@ const serverlessConfiguration: AWS = {
         'serverless-esbuild',
         'serverless-offline',
         'serverless-dotenv-plugin',
-        'serverless-iam-roles-per-function',
+        'serverless-iam-roles-per-function'
     ],
     provider: {
         name: 'aws',
@@ -75,6 +75,9 @@ const serverlessConfiguration: AWS = {
             }
         },
         bucket: 'therealyo-photopass'
+    },
+    package: {
+        individually: true
     }
 }
 
